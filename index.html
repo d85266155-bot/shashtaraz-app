@@ -1,0 +1,1762 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Шаштараз</title>
+<meta name="theme-color" content="#0e0f12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Шаштараз">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Түстер JS арқылы (applyTheme) қойылады; мұнда қараңғы тақырыптың бастапқы мәндері. */
+:root {
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --bg: #0e0f12; --surface: #17181c; --surface2: #22242a;
+  --fg: #ececec; --muted: #a6a8b0; --line: #2a2c33;
+  --gold: #d4af37; --on-gold: #1a1500; --gold-soft: #3a3115; --gold-text: #f3dd8a;
+  --wa: #25d366; --on-wa: #07210f; --ok: #3ddc84; --danger: #ff6b6b;
+  --shadow: 0 10px 30px rgba(0,0,0,.45);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.app { max-width: 480px; margin: 0 auto; display: grid; gap: 14px; position: relative; min-width: 0; }
+.head { display: flex; align-items: center; gap: 12px; }
+.head > div { flex: 1; min-width: 0; }
+h1 { margin: 0; font: 700 28px/1.1 var(--font-display); color: var(--gold); letter-spacing: -.01em; }
+.sub { color: var(--muted); text-transform: capitalize; }
+.iconbtn { width: 44px; height: 44px; border-radius: 14px; border: 0; background: var(--surface2); display: grid; place-items: center; position: relative; flex: none; color: var(--fg); }
+.iconbtn input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.tabs::-webkit-scrollbar, .strip::-webkit-scrollbar { display: none; }
+.chip { flex: none; min-height: 38px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-size: 14px; font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--gold-soft); color: var(--gold-text); border-color: var(--gold); }
+.chip:disabled { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
+.chip .bd { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 6px; border-radius: 9px; background: var(--gold); color: var(--on-gold); font-size: 12px; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.view { display: grid; gap: 12px; min-width: 0; }
+.strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.day { flex: none; border: 0; border-radius: 16px; background: var(--surface); padding: 10px 14px; text-align: center; min-width: 56px; color: var(--fg); }
+.day small { display: block; font-size: 12px; color: var(--muted); text-transform: capitalize; }
+.day strong { font: 700 18px var(--font-display); }
+.day[aria-pressed="true"] { background: var(--gold); color: var(--on-gold); }
+.day[aria-pressed="true"] small { color: var(--on-gold); }
+.stats { color: var(--muted); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.list { display: grid; gap: 10px; }
+.empty { color: var(--muted); padding: 18px 4px; }
+.hint { background: var(--gold-soft); color: var(--gold-text); border-radius: 14px; padding: 12px 14px; font-size: 14px; display: grid; gap: 8px; }
+.hint button { justify-self: start; background: none; border: 0; padding: 0; color: var(--gold-text); font-weight: 700; text-decoration: underline; }
+.closed { background: var(--surface2); border-radius: 14px; padding: 10px 12px; color: var(--danger); font-weight: 600; font-size: 14px; display: grid; gap: 2px; }
+.card { background: var(--surface); border-radius: 20px; padding: 14px; display: flex; gap: 14px; align-items: flex-start; width: 100%; min-width: 0; }
+.card.done { opacity: .6; }
+.card.done .nm { text-decoration: line-through; }
+.card.miss { opacity: .6; border: 1px solid var(--danger); }
+.tm { text-align: center; min-width: 52px; font-variant-numeric: tabular-nums; }
+.tm b { display: block; font: 700 20px var(--font-display); color: var(--gold); }
+.tm span { font-size: 12px; color: var(--muted); }
+.info { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.nm { font-weight: 600; font-size: 17px; overflow-wrap: anywhere; }
+.mut { color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.red { color: var(--danger); }
+.acts2 { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.sbtn { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; font-size: 13px; text-decoration: none; color: var(--fg); }
+.sbtn.wa { background: var(--wa); color: var(--on-wa); border-color: transparent; font-weight: 700; }
+.sbtn.danger { color: var(--danger); border-color: var(--danger); }
+.sbtn.gold { color: var(--gold-text); border-color: var(--gold); }
+.tick { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: transparent; display: grid; place-items: center; color: var(--muted); flex: none; }
+.tick.on { color: var(--ok); border-color: var(--ok); }
+.fab { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(78px + env(safe-area-inset-bottom, 0px)); z-index: 5; height: 52px; padding: 0 22px; border: 0; border-radius: 18px; background: var(--gold); color: var(--on-gold); font: 700 16px var(--font-display); box-shadow: var(--shadow); }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cmpc { background: var(--surface); border-radius: 20px; padding: 14px; display: grid; gap: 4px; min-width: 0; align-content: start; }
+.cmpc small { color: var(--muted); font-size: 12px; }
+.cmpc strong { font: 700 20px var(--font-display); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.up { color: var(--ok); font-weight: 600; font-size: 13px; }
+.down { color: var(--danger); font-weight: 600; font-size: 13px; }
+.box { background: var(--surface); border-radius: 20px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.box > b, .box h3 { font-weight: 600; font-size: 15px; margin: 0; }
+.box h3.gold, h3.gold { color: var(--gold); }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.small { font-size: 12px; color: var(--muted); margin: 0; }
+.prog { height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+.prog > i { display: block; height: 100%; background: var(--gold); border-radius: 6px; }
+.good { color: var(--ok); font-weight: 700; }
+input[type="text"], input[type="tel"], input[type="date"], input[type="number"], input[type="password"], input[inputmode], input[type="search"], select { width: 100%; min-height: 46px; background: var(--surface2); border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; font-size: 16px; color: var(--fg); }
+textarea { width: 100%; min-height: 110px; resize: vertical; background: var(--surface2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; font: 16px/1.4 ui-monospace, Menlo, Consolas, monospace; color: var(--fg); }
+textarea.plain { min-height: 70px; font-family: var(--font-body); }
+label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+.primary { min-height: 50px; border: 0; border-radius: 14px; background: var(--gold); color: var(--on-gold); font: 700 16px var(--font-display); }
+.primary:disabled { opacity: .4; cursor: not-allowed; }
+.ghost { min-height: 50px; border-radius: 14px; border: 1px solid var(--line); background: transparent; font-weight: 600; }
+.hist { display: grid; gap: 4px; font-variant-numeric: tabular-nums; }
+.hist div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.blk { display: flex; align-items: center; gap: 8px; }
+.blk > div { flex: 1; min-width: 0; }
+.msg { margin: 0; min-height: 20px; font-weight: 600; font-size: 14px; color: var(--ok); }
+.msg.err { color: var(--danger); }
+.scrim { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 480px; max-height: 92%; overflow-y: auto; background: var(--surface); border-radius: 28px 28px 0 0; padding: 12px 20px max(24px, env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; }
+.grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line); justify-self: center; }
+.sheet h3 { margin: 0; font: 700 20px var(--font-display); color: var(--gold); }
+.del { background: none; border: 0; color: var(--danger); min-height: 40px; font-weight: 600; }
+.people { display: grid; gap: 10px; }
+.prow { display: grid; grid-template-columns: minmax(0,1fr) 84px 84px auto; gap: 8px; align-items: end; }
+.prow .x { height: 46px; width: 36px; border: 0; background: none; color: var(--danger); font-size: 18px; }
+.swr { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+.swr > div { flex: 1; min-width: 0; }
+.sw { appearance: none; -webkit-appearance: none; width: 50px; height: 30px; border-radius: 15px; background: var(--surface2); border: 1px solid var(--line); position: relative; flex: none; margin: 0; cursor: pointer; }
+.sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--muted); transition: all .15s; }
+.sw:checked { background: var(--gold); border-color: var(--gold); }
+.sw:checked::after { left: 23px; background: var(--on-gold); }
+.warnb { background: var(--surface2); border-left: 4px solid var(--gold); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+.warnb.red { border-color: var(--danger); color: var(--danger); }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--line); display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.bar > div { width: 100%; max-width: 480px; display: flex; }
+.bar button { flex: 1; border: 0; background: none; min-height: 60px; display: grid; place-items: center; align-content: center; gap: 2px; color: var(--muted); font-size: 12px; font-weight: 600; }
+.bar button[aria-pressed="true"] { color: var(--gold); }
+.pal { display: flex; flex-wrap: wrap; gap: 12px; }
+.pal button { width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; display: grid; place-items: center; }
+.pal button[aria-pressed="true"] { border-color: var(--fg); }
+.pal button[aria-pressed="true"]::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom, 0px)); z-index: 40; background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 14px; font-weight: 600; font-size: 14px; max-width: 90%; text-align: center; box-shadow: var(--shadow); }
+.lock { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: grid; place-content: center; justify-items: center; gap: 18px; padding: 24px; }
+.lock h2 { margin: 0; font: 700 22px var(--font-display); color: var(--gold); text-align: center; }
+.dots { display: flex; gap: 14px; height: 18px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold); }
+.dots i.on { background: var(--gold); }
+.keys { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px; }
+.keys button { height: 72px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font: 600 24px var(--font-display); }
+.keys button.ph { visibility: hidden; }
+.bars { display: grid; gap: 6px; }
+.brow { display: grid; grid-template-columns: 34px 1fr 40px; gap: 8px; align-items: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+.brow .bt { height: 12px; border-radius: 6px; background: var(--surface2); overflow: hidden; }
+.brow .bt i { display: block; height: 100%; background: var(--gold); border-radius: 6px; }
+.brow.hot .bt i { background: var(--ok); }
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <div class="head">
+    <div><h1>Шаштараз</h1><div class="sub" id="dateLabel"></div></div>
+    <label class="iconbtn" id="calBtn" title="Күнтізбе">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>
+      <input type="date" id="jump" aria-label="Күнді таңдау">
+    </label>
+  </div>
+  <div class="hint" id="installHint" hidden>
+    <span>iPhone-ға қосымша ретінде орнату: Safari-де төменгі «Бөлісу» батырмасын басып, «Басты экранға қосу» таңдаңыз.</span>
+    <button type="button" id="hintClose">Түсінікті</button>
+  </div>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="view" id="v0">
+    <div class="strip" id="strip"></div>
+    <div id="dayBlocks"></div>
+    <div id="waitHint"></div>
+    <div class="stats" id="stats"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="view" id="v1" hidden>
+    <div class="box">
+      <h3>Күту тізімі</h3>
+      <p class="small">Күн толы болса, клиентті осында жазыңыз. Сол күнге біреу бас тартса, қосымша сізге хабарлайды.</p>
+      <label>Клиент аты<input type="text" id="wName" autocomplete="off"></label>
+      <label>Телефон (WhatsApp)<input type="tel" id="wPhone" inputmode="tel" placeholder="8 777 123 45 67"></label>
+      <label>Күні<input type="date" id="wDay"></label>
+      <button class="primary" id="wAdd" type="button">Кезекке қосу</button>
+    </div>
+    <div class="list" id="wList"></div>
+  </div>
+
+  <div class="view" id="v2" hidden>
+    <div class="box" id="today"></div>
+    <div class="box" id="record"></div>
+    <div class="cmp" id="cmp"></div>
+    <div class="box" id="net"></div>
+    <p class="small" id="planned"></p>
+    <div class="box">
+      <b>Айлар бойынша түсім</b>
+      <div class="legend" id="legend"></div>
+      <div id="chart"></div>
+      <p class="small" id="yearSum"></p>
+    </div>
+    <div class="box" id="patterns"></div>
+    <p class="small">Түсім — «Келді» деп белгіленген жазулардың бағасы.</p>
+  </div>
+
+  <div class="view" id="v3" hidden>
+    <div class="box">
+      <h3>Шығын қосу</h3>
+      <label>Сомасы, ₸<input type="text" id="eAmt" inputmode="numeric" placeholder="50000"></label>
+      <div class="chips" id="eQuick"></div>
+      <label>Не үшін<input type="text" id="eNote" autocomplete="off"></label>
+      <label>Күні<input type="date" id="eDay"></label>
+      <button class="primary" id="eAdd" type="button">Қосу</button>
+    </div>
+    <div class="box" id="eSum"></div>
+    <div class="list" id="eList"></div>
+  </div>
+
+  <div class="view" id="v4" hidden>
+    <div id="lapsed"></div>
+    <div id="debtors"></div>
+    <div id="top10"></div>
+    <div class="stats" id="clientCount"></div>
+    <input type="search" id="cq" placeholder="Іздеу: аты немесе нөмірі" aria-label="Клиент іздеу">
+    <div class="list" id="clients"></div>
+  </div>
+
+  <div class="view" id="v5" hidden>
+    <div class="box">
+      <h3>Қызмет түрлері</h3>
+      <p class="small">Жазылу формасында қызметті бір басумен таңдайсыз, баға өзі толады.</p>
+      <label>Атауы (мысалы, Шаш + сақал)<input type="text" id="sName" autocomplete="off"></label>
+      <label>Бағасы, ₸<input type="text" id="sPrice" inputmode="numeric" placeholder="4000"></label>
+      <button class="primary" id="sAdd" type="button">Қосу</button>
+    </div>
+    <div class="list" id="sList"></div>
+    <div class="box" id="sStats"></div>
+  </div>
+
+  <div class="view" id="v6" hidden>
+    <div class="box">
+      <h3>Демалыс немесе үзіліс</h3>
+      <p class="small">Жабылған уақытқа жазылу мүмкін емес: ол слоттар сұр болады.</p>
+      <div class="chips" id="bQuick"></div>
+      <label>Күні<input type="date" id="bDate"></label>
+      <div class="chips"><button class="chip" type="button" id="bAll" aria-pressed="true">Күні бойы (09:00–22:00)</button></div>
+      <div id="bSlotsWrap" hidden>
+        <div class="lbl" style="margin-bottom:8px">Жабатын уақыттарды таңдаңыз</div>
+        <div class="chips" id="bSlots"></div>
+      </div>
+      <label>Себебі (міндетті емес)<input type="text" id="bNote" autocomplete="off"></label>
+      <button class="primary" id="bSave" type="button">Жабу</button>
+      <p class="msg" id="bMsg" role="status"></p>
+    </div>
+    <b>Жабық күндер мен уақыттар</b>
+    <div class="list" id="bList"></div>
+  </div>
+
+  <div class="view" id="v7" hidden>
+    <div class="box">
+      <h3>Күнтізбеге қосу (еске салғыш)</h3>
+      <p class="small">iPhone қосымша жабық кезде хабарлама жібере алмайды. Сондықтан жазуларды iPhone күнтізбесіне қосыңыз: ол алдыңғы күні 18:00-де және 15 минут қалғанда дыбыспен ескертеді. Жазуды өзгертсеңіз, қайта қосыңыз, көшірме болмайды.</p>
+      <button class="primary" id="calAll" type="button">Алдағы жазуларды күнтізбеге қосу</button>
+      <p class="msg" id="calMsg" role="status"></p>
+    </div>
+    <div class="box">
+      <h3>Сақтық көшірме</h3>
+      <p class="small">Деректер тек осы телефонда сақталады. Мезгіл-мезгіл көшірме жасап, файлды Telegram «Сақталған» бөліміне немесе iCloud-қа салып қойыңыз. Көшірме Android нұсқасымен үйлесімді.</p>
+      <button class="primary" id="exp" type="button">Көшірме жасау</button>
+      <textarea id="expOut" readonly spellcheck="false" aria-label="Көшірме мәтіні" hidden></textarea>
+      <button class="ghost" id="expCopy" type="button" hidden>Мәтінді көшіру</button>
+    </div>
+    <div class="box">
+      <h3>Қалпына келтіру</h3>
+      <p class="small">Көшірме файлын таңдаңыз немесе мәтінін өріске қойыңыз. Қазіргі деректер ауыстырылады. Файл дұрыс болмаса, ештеңе өзгермейді.</p>
+      <label>Файлды таңдау<input type="file" id="impFile" accept=".json,application/json,text/plain"></label>
+      <textarea id="impIn" spellcheck="false" aria-label="Көшірме мәтінін қою" placeholder="Немесе мәтінді осында қойыңыз"></textarea>
+      <button class="ghost" id="impGo" type="button">Қалпына келтіру</button>
+      <div id="impConfirm" hidden class="box" style="background:var(--surface2)">
+        <span>Қазіргі барлық жазулар өшіріліп, көшірмедегі деректер қойылады. Жалғастырасыз ба?</span>
+        <div class="chips"><button class="chip" id="impYes" type="button">Қайтару</button><button class="chip" id="impNo" type="button">Болдырмау</button></div>
+      </div>
+      <p class="msg" id="impMsg" role="status"></p>
+    </div>
+  </div>
+
+  <div class="view" id="v8" hidden></div>
+
+  <button class="fab" id="fab" type="button">+ Жазу</button>
+</main>
+
+<div class="bar" id="bar"><div>
+  <button type="button" id="barHome" aria-pressed="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span>Басты</span></button>
+  <button type="button" id="barSet" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span>Баптау</span></button>
+</div></div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="grab"></div>
+    <h3 id="sheetTitle">Жаңа жазылу</h3>
+    <div class="chips" id="quick"></div>
+    <label>Күні<input type="date" id="fDate"></label>
+    <div class="lbl">Уақыт (09:00–22:00, 30 мин)</div>
+    <div class="chips" id="slots"></div>
+    <div class="lbl" style="margin-top:-6px;font-size:12px">Сұр уақыттар бос емес немесе жабық. Өткен күн мен уақытқа да жазуға болады</div>
+    <div class="lbl" id="rangeNote" style="margin:0;color:var(--gold);font-weight:600" hidden></div>
+    <div class="swr" id="cameWrap" hidden>
+      <div><b>Клиент келген (өткен жазу)</b><div class="small">Қосулы болса, бірден «Келді» деп белгіленіп, түсімге қосылады</div></div>
+      <input type="checkbox" class="sw" id="fCame" aria-label="Клиент келген (өткен жазу)">
+    </div>
+    <label>Клиент аты<input type="text" id="fName" autocomplete="off"></label>
+    <div class="chips" id="sugg"></div>
+    <div id="warnBox" class="people"></div>
+    <label>Телефон (WhatsApp)<input type="tel" id="fPhone" inputmode="tel" placeholder="8 777 123 45 67"></label>
+    <div class="chips" id="cat"></div>
+    <div class="chips" id="svcChips"></div>
+    <label>Бағасы, ₸<input type="text" id="fPrice" inputmode="numeric" placeholder="4000"></label>
+    <div class="people" id="people"></div>
+    <button class="del" id="addPerson" type="button" style="color:var(--gold);justify-self:start;min-height:36px">+ Тағы адам қосу (мысалы, әке мен бала)</button>
+    <div class="people" id="repWrap">
+      <div class="lbl">Қайталау</div>
+      <div class="chips" id="repChips"></div>
+      <div class="chips" id="repCount" hidden></div>
+      <div class="small" id="repNote" hidden></div>
+    </div>
+    <div class="swr" id="unpaidWrap">
+      <div><b>Төленбеген (төленді деп белгілеу)</b></div>
+      <input type="checkbox" class="sw" id="fUnpaid" aria-label="Төленбеген">
+    </div>
+    <button class="primary" id="save" type="button">Сақтау</button>
+    <button class="primary" id="saveWa" type="button" style="background:var(--wa);color:var(--on-wa)" hidden>Сақтау және клиентке WhatsApp жазу</button>
+    <button class="del" id="del" type="button" hidden>Жазылуды өшіру</button>
+    <button class="del" id="delGroup" type="button" hidden>Бүкіл топты өшіру (әке мен бала)</button>
+    <button class="del" id="close" type="button" style="color:var(--muted)">Жабу</button>
+  </div>
+</div>
+
+<div class="lock" id="lock" hidden>
+  <h2 id="lockTitle">PIN-кодты енгізіңіз</h2>
+  <div class="dots" id="dots"></div>
+  <div class="small" id="lockErr" style="color:var(--danger);min-height:18px"></div>
+  <div class="keys" id="keys"></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script type="text/plain" id="ru">
+# kazakh<TAB>russian; \$name = placeholder
+$ago күн бұрын келген	$ago дн. назад
+$d күн	$d дн.
+$k · $n рет	$k · $n раз
+$n рет	$n раз
+$time · $name	$time · $name
+$m минуттан соң	через $m мин
+$name ($time) әлі келген жоқ. Хабарласыңыз.	$name ($time) ещё не пришёл. Свяжитесь с клиентом.
+$n рет	$n раз
+$name · $sum	$name · $sum
+$date, $time бос болды. Кезекте $count адам күтіп тұр.	Освободилось время: $date, $time. В очереди ждут: $count чел.
+$n-адам	$n-й человек
+Барлығы: $sum ₸ · $n адам	Всего: $sum ₸ · $n чел.
++ Жазу	+ Записать
++ Тағы адам қосу (мысалы, әке мен бала)	+ Добавить человека (например, отец и сын)
+1 ай	1 мес.
+1 апта	1 нед.
+10 мин	10 мин
+15 мин	15 мин
+20 мин	20 мин
+30 мин	30 мин
+5 мин	5 мин
+60 мин	60 мин
+4 сан	4 цифры
+Android жүйесінде хабарландыру дыбысын телефонның өз баптауынан да өзгертуге болады.	Звук уведомлений можно также изменить в настройках самого телефона.
+PIN қосулы	PIN включён
+PIN қою	Установить PIN
+PIN өшіру	Отключить PIN
+PIN-код	PIN-код
+PIN-кодты енгізіңіз	Введите PIN-код
+Іздеу: аты немесе нөмірі	Поиск: имя или номер
+Ай рекорды: $sum ($month $year)	Рекорд месяца: $sum ($month $year)
+Айлар бойынша түсім	Доход по месяцам
+Алдыңғы күні еске салу	Напоминание накануне
+Алтын	Золотой
+Атауы (мысалы, Шаш + сақал)	Название (например, Стрижка + борода)
+Аты	Имя
+Ашық	Светлая
+Ақп	Фев
+Бала	Ребёнок
+Баптау	Настройки
+Барлық жазулар, клиенттер, түсім тарихы және жабық уақыттар бір файлға сақталады.	Все записи, клиенты, история дохода и закрытое время сохраняются в один файл.
+Басталуына біраз уақыт қалғанда	Незадолго до начала
+Басты	Главная
+Бағасы, ₸	Цена, ₸
+Бейсенбі	Четверг
+Белгіленбеген жазу: $open (Келді деп белгілеңіз)	Не отмечено: $open (отметьте «Пришёл»)
+Болдырмау	Отмена
+Бос емес болғандықтан $n күн өткізілді	Пропущено дней из-за занятости: $n
+Бос емес немесе жабық күндер өткізіледі	Занятые или закрытые дни пропускаются
+Бос уақыт бар	Есть свободное время
+Бос уақыт шықты	Освободилось время
+Бірінші келген: $d	Первый визит: $d
+Бүгін · $n клиент	Сегодня · клиентов: $n
+Бүгін жазылу жоқ	Сегодня записей нет
+Бүгін — жаңа күн рекорды!	Сегодня — новый рекорд дня!
+Бүгін	Сегодня
+Бүгін: $n клиент, $sum ₸	Сегодня: клиентов $n, $sum ₸
+Бүгін: $sum · рекордқа дейін $left	Сегодня: $sum · до рекорда $left
+Бүгінгі есеп	Отчёт за сегодня
+Бүкіл топты өшіру (әке мен бала)	Удалить всю группу (отец и сын)
+Бұл Шаштараз көшірмесі емес	Это не резервная копия Шаштараз
+Бұл клиенттің төленбеген қарызы бар: $debt ₸	У этого клиента есть неоплаченный долг: $debt ₸
+Бұл күнге жазылу жоқ. «Жазу» батырмасын басыңыз.	На этот день записей нет. Нажмите «Записать».
+Демалыс немесе үзіліс	Выходной или перерыв
+Демалыс	Выходные
+Деректер аз: кемінде 10 келген клиент керек (қазір $n).	Мало данных: нужно минимум 10 визитов (сейчас $n).
+Дыбыс осылай естіледі	Так звучит сигнал
+Дыбыс таңдау	Выбрать звук
+Дыбыс	Звук
+Дыбыссыз	Без звука
+Діріл	Вибрация
+Дүйсенбі	Понедельник
+Ересек	Взрослый
+Ертең клиент бар	Завтра есть клиенты
+Ертең	Завтра
+Ертең: $n жазылу	Завтра: записей $n
+Ертеңгі клиенттер туралы	О завтрашних клиентах
+Еске салу	Напоминание
+Еске салғыштар	Напоминания
+Ескертпе (мысалы, 18:00-ден кейін)	Примечание (например, после 18:00)
+Ештеңе табылмады.	Ничего не найдено.
+Ең көп сағат: $a:00 · ең бос сағат: $b:00	Самый загруженный час: $a:00 · самый свободный: $b:00
+Ең көп: $a · ең аз: $b	Больше всего: $a · меньше всего: $b
+Жабатын уақыттарды таңдаңыз	Выберите время для закрытия
+Жабу	Закрыть
+Жабылды	Закрыто
+Жабылды. Назар аударыңыз: бұл уақытта $n жазылу бар	Закрыто. Внимание: на это время есть записей: $n
+Жабылған уақытқа жазылу мүмкін емес: ол слоттар сұр болады.	На закрытое время записаться нельзя: эти слоты станут серыми.
+Жабық күндер мен уақыттар	Закрытые дни и время
+Жабық уақыт жоқ.	Закрытого времени нет.
+Жабық: $b	Закрыто: $b
+Жазба: $note	Заметка: $note
+Жазбаны сақтау	Сохранить заметку
+Жазу	Запись
+Жазылды ✓	Записано ✓
+Жазылу алдында еске салу	Напоминание перед записью
+Жазылу басталған соң, «Келді» белгіленбесе	Если после начала не отмечено «Пришёл»
+Жазылу формасында қызметті бір басумен таңдайсыз, баға өзі толады.	В форме записи услугу выбираете одним нажатием, цена подставится сама.
+Жазылу: $a–$b · $n адам	Запись: $a–$b · чел.: $n
+Жазылуды өзгерту	Изменить запись
+Жазылуды өшіру	Удалить запись
+Жазылулар	Записи
+Жалдау	Аренда
+Жалпы: $sum  ·  Соңғы: $d	Всего: $sum  ·  Последний: $d
+Жаңа ай рекорды! Рекордтан $x артық	Новый рекорд месяца! Больше прежнего на $x
+Жаңа жазылу	Новая запись
+Жексенбі	Воскресенье
+Жел	Дек
+Жыл басынан	С начала года
+Жыл: $a  ·  $y: $b	Год: $a  ·  $y: $b
+Жүйе бойынша	Как в системе
+Жұма	Пятница
+Кезек бос.	Очередь пуста.
+Кезек	Очередь
+Кезекке қосу	В очередь
+Кезекте күтіп тұрғандар: $n	В очереди ждут: $n
+Келді ✓	Пришёл ✓
+Келді	Пришёл
+Келмеген: $n	Не пришёл: $n
+Келмеген: $n рет	Не пришёл: $n раз
+Келмеді (қайтару)	Не пришёл (вернуть)
+Келмеді	Не пришёл
+Келу тарихы	История визитов
+Кеше	Вчера
+Кешкі есеп	Вечерний отчёт
+Клиент аты	Имя клиента
+Клиент жазылуы туралы хабарламалар	Уведомления о записях клиентов
+Клиент келген (өткен жазу)	Клиент пришёл (прошлая запись)
+Клиент кешігіп жатыр	Клиент опаздывает
+Клиент кешіксе ескерту	Предупреждать об опоздании
+Клиент туралы жазба	Заметка о клиенте
+Клиент: $n  ·  Түсім: $sum ₸	Клиентов: $n  ·  Доход: $sum ₸
+Клиенттер жазылулардан өздігінен жиналады.	Клиенты собираются автоматически из записей.
+Клиенттер	Клиенты
+Клиенттер: $n	Клиентов: $n
+Коммуналдық	Коммунальные
+Контактілерден таңдау	Выбрать из контактов
+Кіші	Мелкий
+Күлгін	Фиолетовый
+Күн рекорды: $sum ($d $month $year)	Рекорд дня: $sum ($d $month $year)
+Күн сайын 22:05-те: бүгін қанша клиент, қанша түсім, ертең қанша жазу бар.	Каждый день в 22:05: сколько клиентов и дохода сегодня и сколько записей завтра.
+Күн толы болса, клиентті осында жазыңыз. Сол күнге біреу бас тартса, қосымша сізге хабарлайды.	Если день занят, запишите клиента сюда. Когда кто-то отменит запись на этот день, приложение сообщит вам.
+Күнтізбе	Календарь
+Күні бойы (09:00–22:00)	Весь день (09:00–22:00)
+Күні бойы	Весь день
+Күту тізімі	Лист ожидания
+Көгілдір-жасыл	Бирюзовый
+Көк	Синий
+Көрсетілмеген	Не указано
+Көрініс	Внешний вид
+Көшірме жасау	Сделать копию
+Көшірме сақталды: $n жазылу	Копия сохранена: записей $n
+Көшірме	Копия
+Мам	Май
+Материал	Материалы
+Мау	Июн
+Мысалы: 2 нөмірлі насадка, бүйірі қысқа	Например: насадка №2, виски короче
+Назар аударыңыз: бұл клиент $n рет келмеген	Внимание: этот клиент не приходил $n раз
+Нау	Мар
+Не үшін	За что
+Ондай клиент жоқ.	Такого клиента нет.
+Осы ай · $m	Этот месяц · $m
+Осы ай	Этот месяц
+Осы ай: $sum · $p%	Этот месяц: $sum · $p%
+Осы айда: ересек $a · бала $k	В этом месяце: взрослых $a · детей $k
+Осы айдағы түсім қызмет бойынша	Доход за месяц по услугам
+Осы айдың қалған жазулары бойынша күтілетін түсім: $sum	Ожидаемый доход по оставшимся записям месяца: $sum
+Осы және өткен айда шығын жоқ.	В этом и прошлом месяце расходов нет.
+Рекордты жаңарту үшін: $need. Қалған күн: $d, күніне шамамен $per	Чтобы обновить рекорд: $need. Осталось дней: $d, примерно $per в день
+Русский	Русский
+Рұқсат беру	Разрешить
+Саусақ ізімен ашу	Открывать по отпечатку
+Саусақ	Отпечаток
+Сағындық	Скучаем
+Сақтау және клиентке WhatsApp жазу	Сохранить и написать клиенту в WhatsApp
+Сақтау	Сохранить
+Сақтық көшірме	Резервная копия
+Себебі (міндетті емес)	Причина (необязательно)
+Сейсенбі	Вторник
+Сенбі	Суббота
+Сомасы, ₸	Сумма, ₸
+Сынақ хабарлама	Тестовое уведомление
+Сұр уақыттар бос емес немесе жабық. Өткен күн мен уақытқа да жазуға болады	Серые слоты заняты или закрыты. Можно записать и на прошедшее время
+Сәлеметсіз бе, $name! $d күніне бос уақыт шықты. Келесіз бе?	Здравствуйте, $name! На $d освободилось время. Придёте?
+Сәлеметсіз бе, $name! Алдыңғы жазылудан $amount ₸ төленбей қалған екен. Ыңғайлы кезде аударып жіберсеңіз, рақмет.	Здравствуйте, $name! По прошлой записи остался неоплаченным $amount ₸. Переведите, пожалуйста, когда удобно. Спасибо.
+Сәлеметсіз бе, $name! Сізді көптен көрмедік. Шашты жаңартатын уақыт болды ма? Қашан ыңғайлы екенін жазыңыз.	Здравствуйте, $name! Давно вас не видели. Не пора ли обновить причёску? Напишите, когда вам удобно.
+Сәлеметсіз бе, $name! Жазылуыңыз $d күні сағат $t-ке ауыстырылды. Келісесіз бе?	Здравствуйте, $name! Ваша запись перенесена на $d, время $t. Вас устраивает?
+Сәлеметсіз бе, $name! Сағат $t-ке жазылғансыз, келе жатырсыз ба?	Здравствуйте, $name! Вы записаны на $t, вы придёте?
+Сәлеметсіз бе, $name! Сізді $d күні сағат $t-те күтеміз. Келе алмасаңыз, алдын ала хабарлаңыз.	Здравствуйте, $name! Ждём вас $d в $t. Если не сможете прийти, предупредите заранее.
+Сәрсенбі	Среда
+Сәу	Апр
+Табыс рекорды · челендж	Рекорд дохода · челлендж
+Таза пайда	Чистая прибыль
+Там	Авг
+Тақырып	Тема
+Таңдалған дыбыс	Выбранный звук
+Таңдау	Выбрать
+Тексеру	Проверить
+Телефон (WhatsApp)	Телефон (WhatsApp)
+Телефон ауыстырсаңыз немесе қосымшаны жойсаңыз, деректі осы файлдан қайтарасыз.	Если смените телефон или удалите приложение, данные можно вернуть из этого файла.
+Топ 10 клиент (келу саны бойынша)	Топ-10 клиентов (по числу визитов)
+Тіл	Язык
+Түс палитрасы	Цветовая палитра
+Түсім — «Келді» деп белгіленген жазулардың бағасы.	Доход — стоимость записей, отмеченных «Пришёл».
+Түсім	Доход
+Түсім: $sum	Доход: $sum
+Төлемеді	Не оплатил
+Төленбеген (түсімге кіріп тұр): $sum. Клиенттер қойындысында тізімі бар.	Неоплачено (входит в доход): $sum. Список во вкладке «Клиенты».
+Төленбеген (төленді деп белгілеу)	Не оплачено (отметить как оплачено)
+Төленбеген: $sum	Не оплачено: $sum
+Төленбегендер: $n клиент · $sum	Неплательщиков: $n · $sum
+Төленді	Оплачено
+Уақыт (09:00–22:00, 30 мин)	Время (09:00–22:00, 30 мин)
+Файл дұрыс емес, деректер өзгерген жоқ	Файл неверный, данные не изменились
+Файлдан қайтару	Восстановить из файла
+Файлды Google Drive-қа немесе Telegram «Сақталған» бөліміне салып қойыңыз.	Сохраните файл в Google Drive или в «Избранное» Telegram.
+Файлды ашу мүмкін болмады	Не удалось открыть файл
+Хабарламалар дәл уақытында келуі үшін «Alarms & reminders» рұқсатын қосыңыз.	Чтобы уведомления приходили точно вовремя, включите разрешение «Alarms & reminders».
+Хабарландырулар	Уведомления
+Шаштараз	Парикмахер
+Шығын қосу	Добавить расход
+Шығын	Расход
+Шығын: $sum	Расход: $sum
+Шіл	Июл
+алда	впереди
+ақпан	февраль
+белгіленбеген	не отмечено
+желтоқсан	декабрь
+және тағы $n клиент	и ещё клиентов: $n
+келді	пришёл
+келмеді	не пришёл
+мамыр	май
+маусым	июнь
+наурыз	март
+сәуір	апрель
+тамыз	август
+төленбеген	не оплачено
+шілде	июль
+Қаз	Окт
+Қазақша	Қазақша
+Қазіргі барлық жазулар өшіріліп, көшірмедегі деректер қойылады. Жалғастырасыз ба?	Все текущие записи будут удалены, а данные из копии — восстановлены. Продолжить?
+Қазіргі деректер көшірмедегімен ауыстырылады. Файл дұрыс болмаса, ештеңе өзгермейді.	Текущие данные будут заменены данными из копии. Если файл неверный, ничего не изменится.
+Қай күні және сағатта клиент көп	В какие дни и часы клиентов больше
+Қайталамау	Не повторять
+Қайталау	Повторять
+Қайтару	Вернуть
+Қайтарылды: $n жазылу	Восстановлено записей: $n
+Қалпына келтіру	Восстановление
+Қалыпты	Обычный
+Қар	Ноя
+Қараңғы	Тёмная
+Қаріп өлшемі	Размер шрифта
+Қате PIN, қайталаңыз	Неверный PIN, повторите
+Қаң	Янв
+Қосу	Добавить
+Қосулы болса, бірден «Келді» деп белгіленіп, түсімге қосылады	Если включено, запись сразу отмечается «Пришёл» и идёт в доход
+Қосымшаны ашқанда PIN сұралады. Клиент деректерін басқа адам көрмейді. Виджеттен жылдам жазу PIN-сіз жұмыс істейді.	При открытии приложения запрашивается PIN. Посторонние не увидят данные клиентов. Быстрая запись с виджета работает без PIN.
+Қоңырау	Звонок
+Қызмет түрлері	Виды услуг
+Қызмет түрі	Вид услуги
+Қызмет әлі қосылмаған.	Услуги ещё не добавлены.
+Қызметтер	Услуги
+Қызғылт сары	Оранжевый
+Қызғылт	Розовый
+Қыр	Сен
+Құрал-сайман	Инструменты
+қазан	октябрь
+қараша	ноябрь
+қаңтар	январь
+қыркүйек	сентябрь
+Үлкен	Крупный
+Ұзақ келмегендер: $n	Давно не были: $n
+Әдепкі дыбыс	Звук по умолчанию
+Әр 2 апта	Каждые 2 недели
+Әр 4 апта	Каждые 4 недели
+Әр апта	Каждую неделю
+Өте үлкен	Очень крупный
+Өткен ай деректері әлі жоқ. Осы айды алғашқы рекордыңыз етіңіз: $sum	Данных за прошлый месяц ещё нет. Сделайте этот месяц первым рекордом: $sum
+Өткен ай	Прошлый месяц
+Өшіру	Удалить
+Онлайн жазылу	Онлайн-запись
+Клиент сілтеме арқылы бос уақытты көріп, өзі жазылады. Жазылу кестеге автоматты түседі.	Клиент по ссылке видит свободное время и записывается сам. Запись автоматически попадает в расписание.
+Құпиясөз	Пароль
+Сақтау және тексеру	Сохранить и проверить
+Синхрондалды	Синхронизировано
+Онлайн жазылу өшірулі немесе толық бапталмаған	Онлайн-запись выключена или настроена не полностью
+Жаңа онлайн жазылу	Новая онлайн-запись
+Онлайн сұраныс: уақыт бос емес	Онлайн-запрос: время занято
+Қате	Ошибка
+Кеше	Вчера
+Қайталау	Повторять
+Көшірме жасау	Сделать копию
+Көшірме сақталды	Копия сохранена
+Көшірілді ✓	Скопировано ✓
+Мәтінді көшіру	Скопировать текст
+Көшірме мәтіні	Текст копии
+Күнді таңдау	Выбрать дату
+Күнтізбеге	В календарь
+Еске салу	Напомнить
+Түсінікті	Понятно
+iPhone-ға қосымша ретінде орнату: Safari-де төменгі «Бөлісу» батырмасын басып, «Басты экранға қосу» таңдаңыз.	Установка на iPhone: в Safari нажмите «Поделиться» внизу и выберите «На экран Домой».
+Күнтізбеге қосу (еске салғыш)	Добавить в календарь (напоминания)
+iPhone қосымша жабық кезде хабарлама жібере алмайды. Сондықтан жазуларды iPhone күнтізбесіне қосыңыз: ол алдыңғы күні 18:00-де және 15 минут қалғанда дыбыспен ескертеді. Жазуды өзгертсеңіз, қайта қосыңыз, көшірме болмайды.	iPhone не может присылать уведомления, когда приложение закрыто. Поэтому добавьте записи в календарь iPhone: он напомнит со звуком накануне в 18:00 и за 15 минут. Если измените запись, добавьте её заново, дубликатов не будет.
+Алдағы жазуларды күнтізбеге қосу	Добавить будущие записи в календарь
+Деректер тек осы телефонда сақталады. Мезгіл-мезгіл көшірме жасап, файлды Telegram «Сақталған» бөліміне немесе iCloud-қа салып қойыңыз. Көшірме Android нұсқасымен үйлесімді.	Данные хранятся только на этом телефоне. Периодически делайте копию и сохраняйте файл в «Избранное» Telegram или в iCloud. Копия совместима с версией для Android.
+Көшірме файлын таңдаңыз немесе мәтінін өріске қойыңыз. Қазіргі деректер ауыстырылады. Файл дұрыс болмаса, ештеңе өзгермейді.	Выберите файл копии или вставьте его текст в поле. Текущие данные будут заменены. Если файл неверный, ничего не изменится.
+Файлды таңдау	Выбрать файл
+Көшірме мәтінін қою	Вставить текст копии
+Немесе мәтінді осында қойыңыз	Или вставьте текст сюда
+Алдағы жазылу жоқ	Будущих записей нет
+$n жазылу дайын. «Күнтізбе» таңдаңыз.	Записей готово: $n. Выберите «Календарь».
+Файлды ашу мүмкін болмады	Не удалось открыть файл
+Қайтарылды: $n жазылу	Восстановлено записей: $n
+Жабық: 	Закрыто: 
+Клиент: $n  ·  Түсім: $s	Клиентов: $n  ·  Доход: $s
+Барлығы: $n ₸ · $c адам	Всего: $n ₸ · человек: $c
+Түсім: $s	Доход: $s
+Шығын: $s	Расход: $s
+Таза пайда: $s	Чистая прибыль: $s
+Жазба: 	Заметка: 
+Жылдың сол мезгілі	тот же период
+жылдың сол мезгілі	тот же период прошлого года
+Жыл: $a  ·  $y: $b	Год: $a  ·  $y: $b
+$d күн бұрын келген	$d дн. назад
+$d күн	$d дн.
+Бірінші келген: $d	Первый визит: $d
+орташа аралық: $d күн	средний интервал: $d дн.
+Жабылды. Назар аударыңыз: бұл уақытта $n жазылу бар	Закрыто. Внимание: на это время записей: $n
+$n күн өткізілді	Пропущено дней: $n
+Бос емес болғандықтан $n күн өткізілді	Пропущено дней из-за занятости: $n
+Жазылу: $a–$b · $n адам	Запись: $a–$b · человек: $n
+$n-адам	$n-й человек
+Категория	Категория
+4 сан	4 цифры
+Қала	Город
+$n рет	$n раз
+белгіленбеген	не отмечено
+келмеді	не пришёл
+келді	пришёл
+алда	впереди
+төленбеген	не оплачено
+Ең көп: $a · ең аз: $b	Больше всего: $a · меньше всего: $b
+Қызмет түрлері	Виды услуг
+жексенбі	воскресенье
+дүйсенбі	понедельник
+сейсенбі	вторник
+сәрсенбі	среда
+бейсенбі	четверг
+жұма	пятница
+сенбі	суббота
+жс	вс
+дс	пн
+сс	вт
+ср	ср
+бс	чт
+жм	пт
+сб	сб
+Күні	Дата
+Қосымшаны ашқанда PIN сұралады. Клиент деректерін басқа адам көрмейді.	При открытии приложения запрашивается PIN. Посторонние не увидят данные клиентов.
+</script>
+<script>
+(function () {
+  var KEY = "shashtaraz-v1";
+  var $ = function (id) { return document.getElementById(id); };
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var ymd = function (d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+  var parse = function (s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); };
+  var addDays = function (d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  var atTime = function (a) { var p = a.time.split(":"); var d = parse(a.date); d.setHours(+p[0], +p[1], 0, 0); return d; };
+  var WD = ["жексенбі", "дүйсенбі", "сейсенбі", "сәрсенбі", "бейсенбі", "жұма", "сенбі"];
+  var WDS = ["жс", "дс", "сс", "ср", "бс", "жм", "сб"];
+  var WDM = ["Дүйсенбі", "Сейсенбі", "Сәрсенбі", "Бейсенбі", "Жұма", "Сенбі", "Жексенбі"]; /* дс..жс тәртібі */
+  var MNF = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+  var MN = ["Қаң", "Ақп", "Нау", "Сәу", "Мам", "Мау", "Шіл", "Там", "Қыр", "Қаз", "Қар", "Жел"];
+  var CLOCK = { lang: "kk" };
+  var MNG = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+  var fmtLong = { format: function (d) { return d.getDate() + " " + (D.cfg.lang === "ru" ? MNG[d.getMonth()] : MNF[d.getMonth()]) + ", " + t(WD[d.getDay()]); } };
+  var fmtWd = { format: function (d) { return t(WDS[d.getDay()]); } };
+  var money = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₸"; };
+  var dmy = function (d) { return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear(); };
+  var toMin = function (t) { var p = t.split(":"); return +p[0] * 60 + +p[1]; };
+  var fmtMin = function (m) { return pad(Math.floor(m / 60)) + ":" + pad(m % 60); };
+  var OPEN = 9 * 60, CLOSE = 22 * 60, SLOTS = [];
+  for (var m = OPEN; m < CLOSE; m += 30) SLOTS.push(fmtMin(m));
+  var endOf = function (t) { return fmtMin(toMin(t) + 30); };
+  var digits = function (s) { return String(s || "").replace(/\D/g, ""); };
+
+  /* ---------- орысша аударма: сөздік res/raw/ru.txt сияқты ($name = толтырғыш) ---------- */
+  var EXACT = {}, PATS = [], CACHE = {};
+  (function () {
+    String($("ru").textContent).split("\n").forEach(function (line) {
+      if (!line || line.charAt(0) === "#") return;
+      var tab = line.indexOf("\t"); if (tab <= 0) return;
+      var kk = line.slice(0, tab), ru = line.slice(tab + 1);
+      var re = /\$[A-Za-z_][A-Za-z0-9_]*/g, keys = [], rx = "^", last = 0, lit = 0, mm;
+      while ((mm = re.exec(kk))) {
+        var part = kk.slice(last, mm.index);
+        rx += part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "([\\s\\S]+?)"; lit += part.length; keys.push(mm[0]); last = mm.index + mm[0].length;
+      }
+      if (!keys.length) { EXACT[kk] = ru; return; }
+      var tail = kk.slice(last); rx += tail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"; lit += tail.length;
+      PATS.push({ re: new RegExp(rx), ru: ru, keys: keys, w: lit });
+    });
+    PATS.sort(function (a, b) { return b.w - a.w; });
+  })();
+  var CYR = /[А-Яа-яӘәҒғҚқҢңӨөҰұҮүІіҺһЁё]/;
+  function t(s) {
+    if (D.cfg.lang !== "ru" || typeof s !== "string" || !CYR.test(s)) return s;
+    if (CACHE[s] != null) return CACHE[s];
+    var out = EXACT[s];
+    if (out == null) {
+      for (var i = 0; i < PATS.length; i++) {
+        var m = PATS[i].re.exec(s); if (!m) continue;
+        var r = PATS[i].ru;
+        PATS[i].keys.forEach(function (k, j) { r = r.split(k).join(EXACT[m[j + 1]] != null ? EXACT[m[j + 1]] : m[j + 1]); });
+        out = r; break;
+      }
+    }
+    if (out == null) out = s;
+    CACHE[s] = out; return out;
+  }
+
+  /* ---------- деректер ---------- */
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var D = { a: [], b: [], sv: [], nt: {}, w: [], ex: [], cfg: { lang: "kk", theme: "dark", palette: "gold", font: 1, pin: "", salt: "" } };
+  try {
+    var st = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (st && Array.isArray(st.a)) {
+      D.a = st.a; D.b = Array.isArray(st.b) ? st.b : [];
+      D.sv = Array.isArray(st.sv) ? st.sv : []; D.nt = st.nt && typeof st.nt === "object" ? st.nt : {};
+      D.w = Array.isArray(st.w) ? st.w : []; D.ex = Array.isArray(st.ex) ? st.ex : [];
+      if (st.cfg) Object.keys(D.cfg).forEach(function (k) { if (st.cfg[k] != null) D.cfg[k] = st.cfg[k]; });
+    }
+  } catch (e) {}
+  D.a.forEach(function (a) { a.groupId = a.groupId || 0; a.noShow = !!a.noShow; a.service = a.service || ""; a.category = a.category || ""; a.unpaid = !!a.unpaid; });
+  var appts = D.a, blocks = D.b;
+  var persist = function () { D.a = appts; D.b = blocks; try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+
+  var selDate = ymd(today), editing = null, tab = 0, openKey = null, topFilter = "";
+  var form = { date: selDate, time: null, extra: [], cat: "", service: "", rep: 0, repN: 4, waitId: 0 };
+  var uid = (function () { var n = Date.now(); return function () { return ++n + Math.floor(Math.random() * 7); }; })();
+
+  function h(tag, cls, text, raw) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = raw ? text : t(text); return e; }
+  function btn(label, cls, fn) { var b = h("button", cls, label); b.type = "button"; b.addEventListener("click", fn); return b; }
+  function link(label, cls, href) { var a = h("a", cls, label); a.href = href; a.target = "_blank"; a.rel = "noopener"; return a; }
+  function toast(msg) {
+    var el = $("toast"); el.textContent = t(msg); el.hidden = false;
+    clearTimeout(toast.k); toast.k = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+  function waLink(phone, text) {
+    var d = digits(phone);
+    if (d.length === 11 && d.charAt(0) === "8") d = "7" + d.slice(1);
+    if (d.length === 10) d = "7" + d;
+    return "https://wa.me/" + d + (text ? "?text=" + encodeURIComponent(text) : "");
+  }
+  /* WhatsApp-қа дайын мәтіндер: шаблон аударылады, сосын мәндер қойылады (қолданба тіліне қарай) */
+  function tpl(key, vars) {
+    var r = t(key);
+    Object.keys(vars).forEach(function (k) { r = r.split("$" + k).join(vars[k]); });
+    return r;
+  }
+  var Msg = {
+    reminder: function (a) { return tpl("Сәлеметсіз бе, $name! Сізді $d күні сағат $t-те күтеміз. Келе алмасаңыз, алдын ала хабарлаңыз.", { name: a.name, d: fmtLong.format(parse(a.date)), t: a.time }); },
+    moved: function (a) { return tpl("Сәлеметсіз бе, $name! Жазылуыңыз $d күні сағат $t-ке ауыстырылды. Келісесіз бе?", { name: a.name, d: fmtLong.format(parse(a.date)), t: a.time }); },
+    free: function (w) { return tpl("Сәлеметсіз бе, $name! $d күніне бос уақыт шықты. Келесіз бе?", { name: w.name, d: fmtLong.format(parse(w.day)) }); },
+    miss: function (c) { return tpl("Сәлеметсіз бе, $name! Сізді көптен көрмедік. Шашты жаңартатын уақыт болды ма? Қашан ыңғайлы екенін жазыңыз.", { name: c.name }); },
+    debt: function (c) { return tpl("Сәлеметсіз бе, $name! Алдыңғы жазылудан $amount ₸ төленбей қалған екен. Ыңғайлы кезде аударып жіберсеңіз, рақмет.", { name: c.name, amount: c.debt }); }
+  };
+
+  /* ---------- көрініс: тақырып, түс, қаріп ---------- */
+  var PALETTES = [["gold", "Алтын", "#d4af37"], ["blue", "Көк", "#4da3ff"], ["teal", "Көгілдір-жасыл", "#2ec4b6"],
+    ["purple", "Күлгін", "#b388ff"], ["rose", "Қызғылт", "#ff7eb6"], ["orange", "Қызғылт сары", "#ff9f43"]];
+  function hex(c) { return [1, 3, 5].map(function (i) { return parseInt(c.slice(i, i + 2), 16); }); }
+  function rgb(a) { return "#" + a.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? "0" : "") + v.toString(16); }).join(""); }
+  function mix(c1, c2, k) { var a = hex(c1), b = hex(c2); return rgb(a.map(function (v, i) { return v + (b[i] - v) * k; })); }
+  function lum(c) { var a = hex(c).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; }
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function applyTheme() {
+    var mode = D.cfg.theme === "system" ? (mq && !mq.matches ? "light" : "dark") : D.cfg.theme;
+    var acc = "#d4af37"; PALETTES.forEach(function (p) { if (p[0] === D.cfg.palette) acc = p[2]; });
+    var r = document.documentElement.style, v = {};
+    if (mode === "dark") {
+      v = { "--bg": "#0e0f12", "--surface": "#17181c", "--surface2": "#22242a", "--fg": "#ececec", "--muted": "#a6a8b0", "--line": "#2a2c33",
+        "--gold": acc, "--gold-soft": mix("#17181c", acc, .22), "--gold-text": mix(acc, "#ffffff", .45), "--ok": "#3ddc84", "--danger": "#ff6b6b", "--shadow": "0 10px 30px rgba(0,0,0,.45)" };
+    } else {
+      var fill = mix(acc, "#000000", .12);
+      v = { "--bg": "#f4f3ef", "--surface": "#ffffff", "--surface2": "#ebe9e2", "--fg": "#1b1b1d", "--muted": "#5d6068", "--line": "#d9d5ca",
+        "--gold": fill, "--gold-soft": mix("#ffffff", acc, .2), "--gold-text": mix(acc, "#000000", .5), "--ok": "#1a8f4c", "--danger": "#c62f2f", "--shadow": "0 10px 30px rgba(0,0,0,.18)" };
+    }
+    v["--on-gold"] = lum(v["--gold"]) > .35 ? "#1a1500" : "#ffffff";
+    Object.keys(v).forEach(function (k) { r.setProperty(k, v[k]); });
+    r.setProperty("color-scheme", mode);
+    var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = v["--bg"];
+    document.documentElement.style.background = v["--bg"];
+    document.body.style.zoom = D.cfg.font && D.cfg.font !== 1 ? String(D.cfg.font) : "";
+  }
+  if (mq && mq.addEventListener) mq.addEventListener("change", function () { if (D.cfg.theme === "system") applyTheme(); });
+
+  /* статикалық мәтінді аудару: бастапқы қазақша мәтін сақталып, тілге қарай ауыстырылады */
+  var STATIC = [];
+  function collectStatic() {
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) { if (CYR.test(n.nodeValue) && !(n.parentNode.closest && n.parentNode.closest("script"))) STATIC.push({ n: n, k: n.nodeValue }); }
+    document.querySelectorAll("[placeholder],[aria-label],[title]").forEach(function (el) {
+      ["placeholder", "aria-label", "title"].forEach(function (a) { var v = el.getAttribute(a); if (v && CYR.test(v)) STATIC.push({ el: el, a: a, k: v }); });
+    });
+  }
+  function applyLang() {
+    CACHE = {};
+    document.documentElement.lang = D.cfg.lang === "ru" ? "ru" : "kk";
+    STATIC.forEach(function (s) {
+      var key = s.k.trim(), lead = s.k.match(/^\s*/)[0], trail = s.k.match(/\s*$/)[0];
+      var v = t(key);
+      if (s.n) s.n.nodeValue = lead + v + trail; else s.el.setAttribute(s.a, v);
+    });
+    document.title = t("Шаштараз");
+  }
+
+  /* ---------- файлды бөлісу, .ics ---------- */
+  function deliver(name, text, mime) {
+    function dl() {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], { type: mime })); a.download = name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    }
+    var file = null; try { file = new File([text], name, { type: mime }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: name }).catch(function (err) { if (!err || err.name !== "AbortError") dl(); });
+      return;
+    }
+    dl();
+  }
+  function icsEsc(x) { return String(x).replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+  function icsDT(d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00"; }
+  function icsEvent(a) {
+    var s = atTime(a), e = new Date(s.getTime() + 30 * 60000);
+    var prev = addDays(parse(a.date), -1); prev.setHours(18, 0, 0, 0);
+    var mins = Math.max(15, Math.round((s - prev) / 60000));
+    var n = new Date();
+    var stamp = n.getUTCFullYear() + pad(n.getUTCMonth() + 1) + pad(n.getUTCDate()) + "T" + pad(n.getUTCHours()) + pad(n.getUTCMinutes()) + pad(n.getUTCSeconds()) + "Z";
+    return ["BEGIN:VEVENT", "UID:shashtaraz-" + a.id + "@barber", "DTSTAMP:" + stamp,
+      "DTSTART:" + icsDT(s), "DTEND:" + icsDT(e), "SUMMARY:" + icsEsc("Шаштараз: " + a.name),
+      "DESCRIPTION:" + icsEsc((a.phone ? "Тел: " + a.phone + "\n" : "") + "Баға: " + a.price + " ₸"),
+      "BEGIN:VALARM", "TRIGGER:-PT" + mins + "M", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc("Ертең клиент: " + a.name + ", " + a.time), "END:VALARM",
+      "BEGIN:VALARM", "TRIGGER:-PT15M", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc("15 минуттан соң: " + a.name), "END:VALARM",
+      "END:VEVENT"].join("\r\n");
+  }
+  function icsCal(list) {
+    return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Shashtaraz//KK//", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"]
+      .concat(list.map(icsEvent)).concat(["END:VCALENDAR"]).join("\r\n") + "\r\n";
+  }
+
+  /* ---------- модель көмекшілері ---------- */
+  function members(a) {
+    if (!a.groupId) return [a];
+    return appts.filter(function (x) { return x.groupId === a.groupId; }).sort(function (x, y) { return x.time < y.time ? -1 : 1; });
+  }
+  function catLabel(c) { return c === "adult" ? t("Ересек") : c === "child" ? t("Бала") : ""; }
+  function priceLine(a) {
+    var p = [];
+    if (a.category) p.push(catLabel(a.category));
+    if (a.service) p.push(a.service);
+    p.push(money(a.price));
+    if (a.unpaid && !a.noShow) p.push(t("төленбеген"));
+    return p.join(" · ");
+  }
+  function revenue(a) { return a.done && !a.noShow ? a.price : 0; }
+  function waitsOn(day) { return D.w.filter(function (w) { return w.day === day; }); }
+  function notifyWaiters(a) {
+    var n = waitsOn(a.date).length;
+    if (n > 0) toast(dmy(parse(a.date)).slice(0, 5) + ", " + a.time + " бос болды. Кезекте " + n + " адам күтіп тұр.");
+  }
+  function blocksOn(date) { return blocks.filter(function (b) { return b.date === date; }); }
+  function isAllDay(b) { return b.from <= OPEN && b.to >= CLOSE; }
+  function blockLabel(b) { return isAllDay(b) ? t("Күні бойы") : fmtMin(b.from) + "–" + fmtMin(b.to); }
+
+  /* ---------- қойындылар ---------- */
+  var TABS = ["Жазылулар", "Кезек", "Түсім", "Шығын", "Клиенттер", "Қызметтер", "Демалыс", "Көшірме"];
+  function renderTabs() {
+    var box = $("tabs"); box.textContent = "";
+    TABS.forEach(function (name, i) {
+      var b = h("button", "chip", name); b.type = "button"; b.setAttribute("aria-pressed", String(tab === i));
+      if (i === 1) { var c = D.w.filter(function (w) { return w.day >= ymd(today); }).length; if (c) b.appendChild(h("span", "bd", String(c), true)); }
+      b.addEventListener("click", function () { tab = i; renderAll(true); window.scrollTo(0, 0); });
+      box.appendChild(b);
+    });
+    for (var i = 0; i < 9; i++) $("v" + i).hidden = tab !== i;
+    box.hidden = tab === 8;
+    $("fab").hidden = tab !== 0; $("calBtn").hidden = tab !== 0;
+    $("dateLabel").textContent = tab === 0 ? fmtLong.format(parse(selDate)) : t(tab === 8 ? "Баптау" : TABS[tab]);
+    $("barHome").setAttribute("aria-pressed", String(tab !== 8)); $("barSet").setAttribute("aria-pressed", String(tab === 8));
+  }
+
+  /* ---------- жазылулар ---------- */
+  function renderStrip() {
+    var strip = $("strip"); strip.textContent = "";
+    for (var i = -7; i <= 60; i++) {
+      (function (d) {
+        var key = ymd(d), b = h("button", "day"); b.type = "button";
+        b.appendChild(h("small", "", fmtWd.format(d), true)); b.appendChild(h("strong", "", String(d.getDate()), true));
+        b.setAttribute("aria-pressed", String(key === selDate));
+        b.addEventListener("click", function () { selDate = key; renderAll(true); });
+        strip.appendChild(b);
+      })(addDays(today, i));
+    }
+  }
+  function centerStrip() {
+    var strip = $("strip"), b = strip.querySelector('[aria-pressed="true"]');
+    if (b && strip.clientWidth) strip.scrollTo({ left: b.offsetLeft - strip.clientWidth / 2 + b.offsetWidth / 2 });
+  }
+  function setAll(list, patch) { list.forEach(function (x) { Object.keys(patch).forEach(function (k) { x[k] = patch[k]; }); }); persist(); renderAll(); }
+  function renderList() {
+    var day = appts.filter(function (a) { return a.date === selDate; }).sort(function (a, b) { return a.time < b.time ? -1 : 1; });
+    var total = day.reduce(function (s, a) { return s + revenue(a); }, 0);
+    $("stats").textContent = t("Клиент: " + day.filter(function (a) { return !a.noShow; }).length + "  ·  Түсім: " + money(total));
+    var bb = blocksOn(selDate), bx = $("dayBlocks"); bx.textContent = "";
+    if (bb.length) {
+      var c = h("div", "closed");
+      bb.forEach(function (b) { c.appendChild(h("span", "", t("Жабық: ") + blockLabel(b) + (b.note ? " · " + b.note : ""), true)); });
+      bx.appendChild(c);
+    }
+    var wh = $("waitHint"); wh.textContent = "";
+    var wn = waitsOn(selDate).length;
+    if (wn) {
+      var hb = h("div", "hint"); hb.appendChild(h("span", "", "Кезекте күтіп тұрғандар: " + wn));
+      hb.appendChild(btn("Кезек", "", function () { tab = 1; renderAll(true); })); wh.appendChild(hb);
+    }
+    var list = $("list"); list.textContent = "";
+    if (!day.length) list.appendChild(h("div", "empty", "Бұл күнге жазылу жоқ. «+ Жазу» батырмасын басыңыз."));
+    var seen = {};
+    day.forEach(function (a) {
+      if (a.groupId) { if (seen[a.groupId]) return; seen[a.groupId] = 1; }
+      var mem = a.groupId ? members(a) : [a], first = mem[0], last = mem[mem.length - 1];
+      var done = mem.every(function (x) { return x.done; }), miss = mem.every(function (x) { return x.noShow; });
+      var unpaid = mem.some(function (x) { return x.unpaid && !x.noShow; });
+      var card = h("div", "card" + (done ? " done" : "") + (miss ? " miss" : ""));
+      var tm = h("div", "tm"); tm.appendChild(h("b", "", first.time, true)); tm.appendChild(h("span", "", endOf(last.time), true));
+      var info = h("div", "info");
+      if (mem.length > 1) {
+        mem.forEach(function (x) {
+          var row = h("div", "nm", x.name, true); info.appendChild(row);
+          info.appendChild(h("div", "mut", priceLine(x), true));
+        });
+        info.appendChild(h("div", "mut", "Барлығы: " + mem.reduce(function (s, x) { return s + x.price; }, 0) + " ₸ · " + mem.length + " адам"));
+      } else {
+        info.appendChild(h("div", "nm", a.name, true));
+        info.appendChild(h("div", "mut", priceLine(a), true));
+      }
+      if (first.phone) info.appendChild(h("div", "mut", first.phone, true));
+      var acts = h("div", "acts2");
+      if (first.phone) {
+        acts.appendChild(link("WhatsApp", "sbtn wa", waLink(first.phone)));
+        acts.appendChild(link("Еске салу", "sbtn", waLink(first.phone, Msg.reminder(first))));
+      }
+      if (!done && !miss && atTime(first) > new Date()) {
+        acts.appendChild(btn("Күнтізбеге", "sbtn", function (e) { e.stopPropagation(); deliver("shashtaraz-" + a.date + "-" + first.time.replace(":", "") + ".ics", icsCal(mem), "text/calendar"); }));
+      }
+      if (!done) {
+        acts.appendChild(btn(miss ? "Келмеді (қайтару)" : "Келмеді", "sbtn" + (miss ? "" : " danger"), function (e) {
+          e.stopPropagation();
+          if (miss) setAll(mem, { noShow: false });
+          else { setAll(mem, { noShow: true, done: false }); notifyWaiters(first); }
+        }));
+      }
+      if (done && !miss) {
+        acts.appendChild(btn(unpaid ? "Төленді" : "Төлемеді", "sbtn" + (unpaid ? " gold" : ""), function (e) { e.stopPropagation(); setAll(mem, { unpaid: !unpaid }); }));
+      }
+      info.appendChild(acts);
+      var tick = h("button", "tick" + (done ? " on" : "")); tick.type = "button"; tick.setAttribute("aria-label", t("Келді"));
+      tick.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+      tick.addEventListener("click", function (e) { e.stopPropagation(); setAll(mem, { done: !done, noShow: false }); });
+      card.appendChild(tm); card.appendChild(info); card.appendChild(tick);
+      card.style.cursor = "pointer"; card.tabIndex = 0;
+      card.addEventListener("click", function (e) { if (e.target.closest("a,button")) return; openSheet(first); });
+      card.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target === card) openSheet(first); });
+      list.appendChild(card);
+    });
+  }
+
+  /* ---------- кезек ---------- */
+  $("wDay").value = ymd(today);
+  function renderWaits() {
+    var list = $("wList"); list.textContent = "";
+    var up = D.w.slice().sort(function (a, b) { return a.day < b.day ? -1 : (a.day > b.day ? 1 : a.id - b.id); });
+    if (!up.length) list.appendChild(h("div", "empty", "Кезек бос."));
+    up.forEach(function (w) {
+      var c = h("div", "box"), r = h("div", "blk"), l = h("div");
+      l.appendChild(h("div", "nm", w.name, true));
+      l.appendChild(h("div", "mut", fmtLong.format(parse(w.day)) + (w.phone ? " · " + w.phone : ""), true));
+      r.appendChild(l); c.appendChild(r);
+      var acts = h("div", "acts2");
+      if (w.phone) acts.appendChild(link("Бос уақыт бар", "sbtn wa", waLink(w.phone, Msg.free(w))));
+      acts.appendChild(btn("Жазу", "sbtn gold", function () { openSheet(null, w.day, w.name, w.phone, w.id); }));
+      acts.appendChild(btn("Өшіру", "sbtn danger", function () { D.w = D.w.filter(function (x) { return x !== w; }); persist(); renderAll(); }));
+      c.appendChild(acts); list.appendChild(c);
+    });
+  }
+  $("wAdd").addEventListener("click", function () {
+    var name = $("wName").value.trim(); if (!name) return;
+    D.w.push({ id: uid(), name: name, phone: $("wPhone").value.trim(), day: $("wDay").value || ymd(today), note: "" });
+    $("wName").value = ""; $("wPhone").value = ""; persist(); renderAll(); toast("Жазылды ✓");
+  });
+
+  /* ---------- түсім, рекорд, таза пайда, заңдылықтар ---------- */
+  function totals() {
+    var Y = today.getFullYear(), M = today.getMonth(), cur = [], prev = [], planned = 0, months = {}, days = {}, i;
+    for (i = 0; i < 12; i++) { cur.push(0); prev.push(0); }
+    appts.forEach(function (a) {
+      if (a.noShow) return;
+      var d = parse(a.date);
+      if (a.done) {
+        if (d.getFullYear() === Y) cur[d.getMonth()] += a.price;
+        else if (d.getFullYear() === Y - 1) prev[d.getMonth()] += a.price;
+        var k = d.getFullYear() + "-" + d.getMonth(); months[k] = (months[k] || 0) + a.price;
+        days[a.date] = (days[a.date] || 0) + a.price;
+      } else if (d.getFullYear() === Y && d.getMonth() === M && atTime(a).getTime() > Date.now()) planned += a.price;
+    });
+    return { Y: Y, M: M, cur: cur, prev: prev, planned: planned, months: months, days: days };
+  }
+  function monthExp(y, m) {
+    return D.ex.reduce(function (s, e) { var d = parse(e.day); return s + (d.getFullYear() === y && d.getMonth() === m ? e.amount : 0); }, 0);
+  }
+  function renderToday() {
+    var box = $("today"); box.textContent = "";
+    box.appendChild(h("h3", "gold", "Бүгінгі есеп"));
+    var k = ymd(today), tk = ymd(addDays(today, 1));
+    var done = appts.filter(function (a) { return a.date === k && a.done && !a.noShow; });
+    box.appendChild(h("div", "", "Бүгін: " + done.length + " клиент, " + done.reduce(function (s, a) { return s + a.price; }, 0) + " ₸"));
+    box.appendChild(h("div", "", "Ертең: " + appts.filter(function (a) { return a.date === tk && !a.noShow; }).length + " жазылу"));
+  }
+  function renderRecord(tt) {
+    var box = $("record"); box.textContent = "";
+    box.appendChild(h("h3", "gold", "Табыс рекорды · челендж"));
+    var curKey = tt.Y + "-" + tt.M, best = 0, bk = null;
+    Object.keys(tt.months).forEach(function (k) { if (k !== curKey && tt.months[k] > best) { best = tt.months[k]; bk = k; } });
+    var cur = tt.cur[tt.M];
+    if (best > 0) {
+      var frac = Math.min(1, cur / best), p = bk.split("-");
+      box.appendChild(h("div", "", "Ай рекорды: " + money(best) + " (" + t(MNF[+p[1]]) + " " + p[0] + ")"));
+      var pr = h("div", "prog"), bar = h("i"); bar.style.width = Math.round(frac * 100) + "%"; pr.appendChild(bar); box.appendChild(pr);
+      if (cur > best) box.appendChild(h("div", "good", "Жаңа ай рекорды! Рекордтан " + money(cur - best) + " артық"));
+      else {
+        var need = best - cur + 1, left = new Date(tt.Y, tt.M + 1, 0).getDate() - today.getDate() + 1, per = Math.ceil(need / left);
+        box.appendChild(h("div", "", "Осы ай: " + money(cur) + " · " + Math.floor(frac * 100) + "%"));
+        box.appendChild(h("p", "small", "Рекордты жаңарту үшін: " + money(need) + ". Қалған күн: " + left + ", күніне шамамен " + money(per)));
+      }
+    } else box.appendChild(h("div", "", "Өткен ай деректері әлі жоқ. Осы айды алғашқы рекордыңыз етіңіз: " + money(cur)));
+    var bd = null, bs = 0;
+    Object.keys(tt.days).forEach(function (k) { if (tt.days[k] > bs) { bs = tt.days[k]; bd = k; } });
+    if (bd) {
+      var d = parse(bd), tdy = tt.days[ymd(today)] || 0;
+      box.appendChild(h("div", "", "Күн рекорды: " + money(bs) + " (" + d.getDate() + " " + t(MNF[d.getMonth()]) + " " + d.getFullYear() + ")"));
+      if (bd === ymd(today)) box.appendChild(h("div", "good", "Бүгін — жаңа күн рекорды!"));
+      else box.appendChild(h("p", "small", "Бүгін: " + money(tdy) + " · рекордқа дейін " + money(bs - tdy + 1)));
+    }
+  }
+  function delta(now, before) {
+    if (!before) return h("span", "small", "—", true);
+    var p = Math.round((now - before) * 100 / before);
+    return h("span", p >= 0 ? "up" : "down", (p >= 0 ? "▲ " : "▼ ") + Math.abs(p) + "%", true);
+  }
+  function cmpCard(title, now, before, beforeLabel) {
+    var c = h("div", "cmpc");
+    c.appendChild(h("small", "", title)); c.appendChild(h("strong", "", money(now), true));
+    c.appendChild(h("small", "", t(beforeLabel) + ": " + money(before), true)); c.appendChild(delta(now, before));
+    return c;
+  }
+  function renderNet(tt) {
+    var box = $("net"); box.textContent = "";
+    var inc = tt.cur[tt.M], exp = monthExp(tt.Y, tt.M);
+    box.appendChild(h("h3", "gold", "Таза пайда"));
+    box.appendChild(h("div", "", "Түсім: " + money(inc)));
+    box.appendChild(h("div", "", "Шығын: " + money(exp)));
+    var net = h("div", net_cls(inc - exp), money(inc - exp), true); net.style.font = "700 20px var(--font-display)"; box.appendChild(net);
+    var unpaid = appts.reduce(function (s, a) { return s + (a.unpaid && !a.noShow && a.done ? a.price : 0); }, 0);
+    if (unpaid > 0) box.appendChild(h("p", "small", "Төленбеген (түсімге кіріп тұр): " + money(unpaid) + ". Клиенттер қойындысында тізімі бар."));
+  }
+  function net_cls(v) { return v >= 0 ? "good" : "red"; }
+  function renderPatterns() {
+    var box = $("patterns"); box.textContent = "";
+    box.appendChild(h("h3", "", "Қай күні және сағатта клиент көп"));
+    var done = appts.filter(function (a) { return a.done && !a.noShow; });
+    if (done.length < 10) { box.appendChild(h("p", "small", "Деректер аз: кемінде 10 келген клиент керек (қазір " + done.length + ")."));  return; }
+    var byDay = [0, 0, 0, 0, 0, 0, 0], byHour = {}, hr;
+    for (hr = 9; hr < 22; hr++) byHour[hr] = 0;
+    done.forEach(function (a) { var wd = (parse(a.date).getDay() + 6) % 7; byDay[wd]++; byHour[Math.floor(toMin(a.time) / 60)]++; });
+    function bars(vals, labels) {
+      var mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), wrap = h("div", "bars");
+      vals.forEach(function (v, i) {
+        var r = h("div", "brow" + (v === mx ? " hot" : "")); r.appendChild(h("span", "", labels[i], true));
+        var b = h("div", "bt"), f = h("i"); f.style.width = Math.round(v / (mx || 1) * 100) + "%"; b.appendChild(f); r.appendChild(b);
+        r.appendChild(h("span", "", String(v), true)); wrap.appendChild(r);
+      });
+      return wrap;
+    }
+    box.appendChild(bars(byDay, WDM.map(function (x) { return t(x).slice(0, 3); })));
+    var mxd = Math.max.apply(null, byDay), mnd = Math.min.apply(null, byDay);
+    box.appendChild(h("div", "", "Ең көп: " + t(WDM[byDay.indexOf(mxd)]) + " · ең аз: " + t(WDM[byDay.indexOf(mnd)])));
+    var hv = [], hl = []; for (hr = 9; hr < 22; hr++) { hv.push(byHour[hr]); hl.push(pad(hr)); }
+    box.appendChild(bars(hv, hl));
+    var mxh = Math.max.apply(null, hv), mnh = Math.min.apply(null, hv);
+    box.appendChild(h("div", "", "Ең көп сағат: " + pad(9 + hv.indexOf(mxh)) + ":00 · ең бос сағат: " + pad(9 + hv.indexOf(mnh)) + ":00"));
+  }
+  function renderStats() {
+    var tt = totals(), M = tt.M, cur = tt.cur, prev = tt.prev, i;
+    renderToday(); renderRecord(tt); renderNet(tt); renderPatterns();
+    var lastM = M > 0 ? cur[M - 1] : prev[11], ytd = 0, ytdPrev = 0;
+    for (i = 0; i <= M; i++) { ytd += cur[i]; ytdPrev += prev[i]; }
+    var box = $("cmp"); box.textContent = "";
+    box.appendChild(cmpCard(t("Осы ай") + " · " + t(MNF[M]), cur[M], lastM, "Өткен ай"));
+    box.appendChild(cmpCard("Жыл басынан", ytd, ytdPrev, (tt.Y - 1) + " " + t("жылдың сол мезгілі")));
+    $("planned").textContent = tt.planned > 0 ? t("Осы айдың қалған жазулары бойынша күтілетін түсім: " + money(tt.planned)) : "";
+    var max = 1; cur.concat(prev).forEach(function (v) { if (v > max) max = v; });
+    var svg = '<svg viewBox="0 0 336 150" width="100%" role="img" aria-label="' + tt.Y + ' / ' + (tt.Y - 1) + '">';
+    for (i = 0; i < 12; i++) {
+      var x = i * 28 + 3, hp = Math.round(prev[i] / max * 110), hc = Math.round(cur[i] / max * 110);
+      svg += '<rect x="' + x + '" y="' + (120 - hp) + '" width="10" height="' + hp + '" rx="2" style="fill:var(--muted);opacity:.45"/>';
+      svg += '<rect x="' + (x + 11) + '" y="' + (120 - hc) + '" width="10" height="' + hc + '" rx="2" style="fill:var(--gold)"/>';
+      svg += '<text x="' + (x + 10.5) + '" y="137" text-anchor="middle" font-size="8.5" style="fill:var(--muted)">' + t(MN[i]) + '</text>';
+    }
+    svg += '<line x1="0" y1="120" x2="336" y2="120" style="stroke:var(--line)" stroke-width="1"/></svg>';
+    $("chart").innerHTML = svg;
+    $("legend").innerHTML = '<span><i style="background:var(--gold)"></i>' + tt.Y + '</span><span><i style="background:var(--muted);opacity:.45"></i>' + (tt.Y - 1) + '</span>';
+    var sum = function (a) { return a.reduce(function (s, v) { return s + v; }, 0); };
+    $("yearSum").textContent = t("Жыл: " + money(sum(cur)) + "  ·  " + (tt.Y - 1) + ": " + money(sum(prev)));
+  }
+
+  /* ---------- шығындар ---------- */
+  $("eDay").value = ymd(today);
+  ["Жалдау", "Материал", "Коммуналдық", "Құрал-сайман"].forEach(function (n) {
+    $("eQuick").appendChild(btn(n, "chip", function () { $("eNote").value = t(n); }));
+  });
+  $("eAmt").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
+  $("eAdd").addEventListener("click", function () {
+    var amt = parseInt($("eAmt").value, 10); if (!amt) return;
+    D.ex.push({ id: uid(), day: $("eDay").value || ymd(today), amount: amt, note: $("eNote").value.trim() });
+    $("eAmt").value = ""; $("eNote").value = ""; persist(); renderAll(); toast("Жазылды ✓");
+  });
+  function renderExpenses() {
+    var Y = today.getFullYear(), M = today.getMonth(), inc = totals().cur[M], exp = monthExp(Y, M);
+    var box = $("eSum"); box.textContent = "";
+    box.appendChild(h("div", "", "Шығын: " + money(exp)));
+    box.appendChild(h("div", "", "Түсім: " + money(inc)));
+    box.appendChild(h("div", net_cls(inc - exp), t("Таза пайда") + ": " + money(inc - exp), true));
+    var list = $("eList"); list.textContent = "";
+    var pm = new Date(Y, M - 1, 1);
+    var rows = D.ex.filter(function (e) { var d = parse(e.day); return (d.getFullYear() === Y && d.getMonth() === M) || (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()); })
+      .sort(function (a, b) { return a.day < b.day ? 1 : -1; });
+    if (!rows.length) list.appendChild(h("div", "empty", "Осы және өткен айда шығын жоқ."));
+    rows.forEach(function (e) {
+      var c = h("div", "box"), r = h("div", "blk"), l = h("div");
+      l.appendChild(h("div", "nm", money(e.amount), true)); l.appendChild(h("div", "mut", dmy(parse(e.day)) + (e.note ? " · " + e.note : ""), true));
+      r.appendChild(l); r.appendChild(btn("Өшіру", "sbtn danger", function () { D.ex = D.ex.filter(function (x) { return x !== e; }); persist(); renderAll(); }));
+      c.appendChild(r); list.appendChild(c);
+    });
+  }
+
+  /* ---------- қызметтер ---------- */
+  $("sPrice").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
+  $("sAdd").addEventListener("click", function () {
+    var n = $("sName").value.trim(); if (!n) return;
+    D.sv.push({ id: uid(), name: n, price: parseInt($("sPrice").value, 10) || 0 });
+    $("sName").value = ""; $("sPrice").value = ""; persist(); renderAll();
+  });
+  function renderServices() {
+    var list = $("sList"); list.textContent = "";
+    if (!D.sv.length) list.appendChild(h("div", "empty", "Қызмет әлі қосылмаған."));
+    D.sv.forEach(function (s) {
+      var c = h("div", "box"), r = h("div", "blk"), l = h("div");
+      l.appendChild(h("div", "nm", s.name, true)); l.appendChild(h("div", "mut", money(s.price), true));
+      r.appendChild(l); r.appendChild(btn("Өшіру", "sbtn danger", function () { D.sv = D.sv.filter(function (x) { return x !== s; }); persist(); renderAll(); }));
+      c.appendChild(r); list.appendChild(c);
+    });
+    var Y = today.getFullYear(), M = today.getMonth(), by = {}, ad = 0, kd = 0;
+    appts.forEach(function (a) {
+      var d = parse(a.date); if (!a.done || a.noShow || d.getFullYear() !== Y || d.getMonth() !== M) return;
+      var k = a.service || t("Көрсетілмеген"); by[k] = by[k] || { n: 0, s: 0 }; by[k].n++; by[k].s += a.price;
+      if (a.category === "adult") ad++; else if (a.category === "child") kd++;
+    });
+    var box = $("sStats"); box.textContent = "";
+    box.appendChild(h("h3", "", "Осы айдағы түсім қызмет бойынша"));
+    var keys = Object.keys(by).sort(function (a, b) { return by[b].s - by[a].s; });
+    if (!keys.length) box.appendChild(h("div", "small", "—", true));
+    keys.forEach(function (k) { var r = h("div", "blk"); r.appendChild(h("span", "", k, true)); r.lastChild.style.flex = "1"; r.appendChild(h("b", "", by[k].n + "× · " + money(by[k].s), true)); box.appendChild(r); });
+    box.appendChild(h("p", "small", "Осы айда: ересек " + ad + " · бала " + kd));
+  }
+
+  /* ---------- клиенттер ---------- */
+  function clientKey(a) { var d = digits(a.phone); return d.length >= 10 ? d.slice(-10) : "n:" + a.name.trim().toLowerCase(); }
+  function buildClients() {
+    var g = {};
+    appts.forEach(function (a) { var k = clientKey(a); (g[k] = g[k] || []).push(a); });
+    return Object.keys(g).map(function (k) {
+      var v = g[k].slice().sort(function (x, y) { return atTime(y) - atTime(x); });
+      var ph = ""; v.some(function (a) { if (a.phone) { ph = a.phone; return true; } });
+      var done = v.filter(function (a) { return a.done && !a.noShow; });
+      var asc = done.slice().sort(function (x, y) { return atTime(x) - atTime(y); });
+      var avg = 0;
+      if (asc.length > 1) avg = Math.round((atTime(asc[asc.length - 1]) - atTime(asc[0])) / 86400000 / (asc.length - 1));
+      var cat = ""; v.some(function (a) { if (a.category) { cat = a.category; return true; } });
+      return { key: k, name: v[0].name, phone: ph, visits: v, done: done, first: asc.length ? atTime(asc[0]) : null, avgGap: avg,
+        total: done.reduce(function (s, a) { return s + a.price; }, 0), last: atTime(v[0]), lastPrice: v[0].price, category: cat,
+        lastDone: done.length ? atTime(done[0]) : null, future: v.some(function (a) { return !a.done && !a.noShow && atTime(a) > new Date(); }),
+        noShows: v.filter(function (a) { return a.noShow; }).length,
+        debt: v.reduce(function (s, a) { return s + (a.unpaid && !a.noShow ? a.price : 0); }, 0) };
+    }).sort(function (a, b) { return b.last - a.last; });
+  }
+  function clientByForm(name, phone) {
+    var all = buildClients(), d = digits(phone), n = (name || "").trim().toLowerCase(), r = null;
+    all.some(function (c) { if ((d.length >= 10 && digits(c.phone).slice(-10) === d.slice(-10)) || (n && c.name.toLowerCase() === n)) { r = c; return true; } });
+    return r;
+  }
+  function renderClients() {
+    var all = buildClients(), q = $("cq").value.trim(), dg = digits(q);
+    var shown = !q ? all : all.filter(function (c) { return c.name.toLowerCase().indexOf(q.toLowerCase()) >= 0 || (dg && digits(c.phone).indexOf(dg) >= 0); });
+    $("clientCount").textContent = t("Клиенттер: " + all.length);
+    var now = new Date();
+    /* ұзақ келмегендер */
+    var lp = $("lapsed"); lp.textContent = "";
+    var lapsed = all.filter(function (c) { return c.lastDone && !c.future && (now - c.lastDone) / 86400000 > 42 && c.phone; })
+      .sort(function (a, b) { return a.lastDone - b.lastDone; });
+    if (lapsed.length) {
+      var lb = h("div", "box"); lb.appendChild(h("h3", "gold", "Ұзақ келмегендер: " + lapsed.length));
+      lapsed.slice(0, 8).forEach(function (c) {
+        var r = h("div", "blk"), l = h("div"); l.appendChild(h("div", "nm", c.name, true));
+        l.appendChild(h("div", "mut", Math.floor((now - c.lastDone) / 86400000) + " " + t("күн бұрын келген"), true));
+        r.appendChild(l); r.appendChild(link("Сағындық", "sbtn wa", waLink(c.phone, Msg.miss(c)))); lb.appendChild(r);
+      });
+      if (lapsed.length > 8) lb.appendChild(h("p", "small", "және тағы " + (lapsed.length - 8) + " клиент"));
+      lp.appendChild(lb);
+    }
+    /* қарыздар */
+    var dp = $("debtors"); dp.textContent = "";
+    var debtors = all.filter(function (c) { return c.debt > 0; });
+    if (debtors.length) {
+      var db = h("div", "box"); db.appendChild(h("h3", "gold", "Төленбегендер: " + debtors.length + " клиент · " + money(debtors.reduce(function (s, c) { return s + c.debt; }, 0))));
+      debtors.forEach(function (c) {
+        var r = h("div", "blk"), l = h("div"); l.appendChild(h("div", "nm", c.name, true)); l.appendChild(h("div", "mut red", money(c.debt), true));
+        r.appendChild(l);
+        if (c.phone) r.appendChild(link("WhatsApp", "sbtn wa", waLink(c.phone, Msg.debt(c))));
+        r.appendChild(btn("Төленді", "sbtn gold", function () { c.visits.forEach(function (a) { a.unpaid = false; }); persist(); renderAll(); }));
+        db.appendChild(r);
+      });
+      dp.appendChild(db);
+    }
+    /* топ 10 */
+    var tp = $("top10"); tp.textContent = "";
+    var top = all.filter(function (c) { return c.done.length > 0; }).sort(function (a, b) { return b.done.length - a.done.length || b.total - a.total; }).slice(0, 10);
+    if (top.length) {
+      var tb = h("div", "box"); tb.appendChild(h("h3", "gold", "Топ 10 клиент (келу саны бойынша)"));
+      top.forEach(function (c, i) {
+        var r = h("div", "blk"); r.style.cursor = "pointer";
+        r.appendChild(h("b", "", String(i + 1), true)); r.firstChild.style.minWidth = "22px";
+        var l = h("div", "nm", c.name, true); l.style.fontSize = "15px"; r.appendChild(l);
+        var cn = h("b", "", c.done.length + " " + t("рет"), true); cn.style.color = "var(--gold)"; r.appendChild(cn);
+        r.addEventListener("click", function () { $("cq").value = c.name; openKey = c.key; renderClients(); window.scrollTo(0, 0); });
+        tb.appendChild(r);
+      });
+      tp.appendChild(tb);
+    }
+    var box = $("clients"); box.textContent = "";
+    if (!shown.length) box.appendChild(h("div", "empty", all.length ? "Ештеңе табылмады." : "Клиенттер жазылулардан өздігінен жиналады."));
+    shown.forEach(function (c) {
+      var card = h("div", "box"); card.style.cursor = "pointer"; card.tabIndex = 0;
+      var top2 = h("div", "blk"), l = h("div"); l.appendChild(h("div", "nm", c.name + (c.category ? " · " + catLabel(c.category) : ""), true));
+      if (c.phone) l.appendChild(h("div", "mut", c.phone, true));
+      top2.appendChild(l); var cnt = h("b", "", c.done.length + " " + t("рет"), true); cnt.style.color = "var(--gold)"; top2.appendChild(cnt);
+      card.appendChild(top2);
+      card.appendChild(h("p", "small", "Жалпы: " + money(c.total) + "  ·  Соңғы: " + dmy(c.last)));
+      if (c.noShows) card.appendChild(h("p", "small red", "Келмеген: " + c.noShows + " рет"));
+      if (c.debt) card.appendChild(h("p", "small red", "Төленбеген: " + money(c.debt)));
+      var note = D.nt[c.key];
+      if (note) card.appendChild(h("p", "small", t("Жазба: ") + note, true));
+      var open = openKey === c.key;
+      if (open) {
+        card.appendChild(h("b", "", "Келу тарихы"));
+        if (c.first) card.appendChild(h("p", "small", t("Бірінші келген: " + dmy(c.first)) + (c.avgGap ? " · " + t("орташа аралық: " + c.avgGap + " күн") : ""), true));
+        var hist = h("div", "hist");
+        c.visits.forEach(function (v) {
+          var s = v.noShow ? "келмеді" : v.done ? "келді" : (atTime(v) < new Date() ? "белгіленбеген" : "алда");
+          var row = h("div"); row.appendChild(h("span", "mut", dmy(parse(v.date)) + " " + v.time, true));
+          var r = h("span", "", money(v.price) + " · " + t(s) + (v.unpaid && !v.noShow ? " · " + t("төленбеген") : ""), true);
+          r.style.color = v.done && !v.noShow ? "var(--ok)" : (s === "келмеді" ? "var(--danger)" : "var(--gold)");
+          row.appendChild(r); hist.appendChild(row);
+        });
+        card.appendChild(hist);
+        var ta = h("textarea", "plain"); ta.value = note || ""; ta.placeholder = t("Мысалы: 2 нөмірлі насадка, бүйірі қысқа"); ta.setAttribute("aria-label", t("Клиент туралы жазба"));
+        ta.addEventListener("click", function (e) { e.stopPropagation(); });
+        card.appendChild(ta);
+        var acts = h("div", "acts2");
+        acts.appendChild(btn("Жазбаны сақтау", "sbtn gold", function (e) { e.stopPropagation(); var v = ta.value.trim(); if (v) D.nt[c.key] = v; else delete D.nt[c.key]; persist(); renderClients(); toast("Жазылды ✓"); }));
+        if (c.phone) acts.appendChild(link("WhatsApp", "sbtn wa", waLink(c.phone)));
+        acts.appendChild(btn("Жаңа жазылу", "sbtn", function (e) { e.stopPropagation(); openSheet(null, selDate, c.name, c.phone); }));
+        card.appendChild(acts);
+      }
+      var toggle = function () { openKey = open ? null : c.key; renderClients(); };
+      card.addEventListener("click", function (e) { if (e.target.closest("a,button,textarea")) return; toggle(); });
+      card.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target === card) toggle(); });
+      box.appendChild(card);
+    });
+  }
+  $("cq").addEventListener("input", renderClients);
+
+  /* ---------- демалыс ---------- */
+  var bState = { date: ymd(today), all: true, picked: {} };
+  function rangesOf(times) {
+    var mins = times.map(toMin).sort(function (a, b) { return a - b; }), out = [], s = -1, p = -1;
+    mins.forEach(function (m) { if (s === -1) { s = m; p = m; } else if (m === p + 30) p = m; else { out.push([s, p + 30]); s = m; p = m; } });
+    if (s !== -1) out.push([s, p + 30]);
+    return out;
+  }
+  function renderBlocks() {
+    var q = $("bQuick"); q.textContent = "";
+    [["Бүгін", 0], ["Ертең", 1]].forEach(function (p) {
+      var d = ymd(addDays(today, p[1])), b = h("button", "chip", p[0]); b.type = "button"; b.setAttribute("aria-pressed", String(bState.date === d));
+      b.addEventListener("click", function () { bState.date = d; renderBlocks(); }); q.appendChild(b);
+    });
+    $("bDate").value = bState.date; $("bDate").min = ymd(today);
+    $("bAll").setAttribute("aria-pressed", String(bState.all));
+    $("bSlotsWrap").hidden = bState.all;
+    var s = $("bSlots"); s.textContent = "";
+    SLOTS.forEach(function (tt) {
+      var b = h("button", "chip", tt, true); b.type = "button"; b.setAttribute("aria-pressed", String(!!bState.picked[tt]));
+      b.addEventListener("click", function () { bState.picked[tt] = !bState.picked[tt]; renderBlocks(); }); s.appendChild(b);
+    });
+    $("bSave").disabled = !(bState.all || Object.keys(bState.picked).some(function (k) { return bState.picked[k]; }));
+    var list = $("bList"); list.textContent = "";
+    var up = blocks.filter(function (b) { return b.date >= ymd(today); }).sort(function (a, b) { return a.date === b.date ? a.from - b.from : (a.date < b.date ? -1 : 1); });
+    if (!up.length) list.appendChild(h("div", "empty", "Жабық уақыт жоқ."));
+    up.forEach(function (b) {
+      var c = h("div", "box"), r = h("div", "blk"), l = h("div");
+      l.appendChild(h("div", "nm", fmtLong.format(parse(b.date)), true)); l.appendChild(h("div", "mut", blockLabel(b) + (b.note ? " · " + b.note : ""), true));
+      r.appendChild(l);
+      r.appendChild(btn("Өшіру", "sbtn danger", function () { blocks = blocks.filter(function (x) { return x !== b; }); persist(); renderAll(); }));
+      c.appendChild(r); list.appendChild(c);
+    });
+  }
+  $("bDate").addEventListener("change", function () { if (this.value) { bState.date = this.value; renderBlocks(); } });
+  $("bAll").addEventListener("click", function () { bState.all = !bState.all; renderBlocks(); });
+  $("bSave").addEventListener("click", function () {
+    var ranges = bState.all ? [[OPEN, CLOSE]] : rangesOf(Object.keys(bState.picked).filter(function (k) { return bState.picked[k]; }));
+    ranges.forEach(function (r) { blocks.push({ id: uid(), date: bState.date, from: r[0], to: r[1], note: $("bNote").value.trim() }); });
+    var conflicts = appts.filter(function (a) { var m = toMin(a.time); return a.date === bState.date && ranges.some(function (r) { return m >= r[0] && m < r[1]; }); }).length;
+    bState.picked = {}; $("bNote").value = ""; persist();
+    $("bMsg").className = "msg"; $("bMsg").textContent = conflicts ? t("Жабылды. Назар аударыңыз: бұл уақытта " + conflicts + " жазылу бар") : t("Жабылды");
+    renderAll();
+  });
+
+  /* ---------- күнтізбе, көшірме ---------- */
+  $("calAll").addEventListener("click", function () {
+    var up = appts.filter(function (a) { return !a.done && !a.noShow && atTime(a) > new Date(); });
+    if (!up.length) { $("calMsg").className = "msg err"; $("calMsg").textContent = t("Алдағы жазылу жоқ"); return; }
+    $("calMsg").className = "msg"; $("calMsg").textContent = t(up.length + " жазылу дайын. «Күнтізбе» таңдаңыз.");
+    deliver("shashtaraz-calendar.ics", icsCal(up), "text/calendar");
+  });
+  function backupData() {
+    return { app: "barber", version: 1, exportedAt: Date.now(),
+      appointments: appts.map(function (a) { return { id: a.id, name: a.name, phone: a.phone, price: a.price, startMillis: atTime(a).getTime(), date: a.date, time: a.time,
+        done: !!a.done, groupId: a.groupId || 0, noShow: !!a.noShow, service: a.service || "", category: a.category || "", unpaid: !!a.unpaid }; }),
+      blocks: blocks.map(function (b) { return { id: b.id, day: b.date, fromMin: b.from, toMin: b.to, note: b.note || "" }; }),
+      services: D.sv.map(function (s) { return { id: s.id, name: s.name, price: s.price }; }),
+      notes: Object.keys(D.nt).map(function (k) { return { ckey: k, note: D.nt[k] }; }),
+      waits: D.w.map(function (w) { return { id: w.id, name: w.name, phone: w.phone, day: w.day, note: w.note || "" }; }),
+      expenses: D.ex.map(function (e) { return { id: e.id, day: e.day, amount: e.amount, note: e.note || "" }; }) };
+  }
+  $("exp").addEventListener("click", function () {
+    var text = JSON.stringify(backupData(), null, 2);
+    $("expOut").value = text; $("expOut").hidden = false; $("expCopy").hidden = false;
+    deliver("shashtaraz-backup-" + ymd(new Date()) + ".json", text, "application/json");
+  });
+  $("expCopy").addEventListener("click", function () {
+    var ta = $("expOut");
+    function fb() { ta.focus(); ta.select(); try { document.execCommand("copy"); } catch (e) {} }
+    try { navigator.clipboard.writeText(ta.value).then(function () {}, fb); } catch (e) { fb(); }
+    $("expCopy").textContent = t("Көшірілді ✓");
+  });
+  var pendingImport = null;
+  function impMsg(x, err) { $("impMsg").className = "msg" + (err ? " err" : ""); $("impMsg").textContent = t(x); }
+  function tryImport(text) {
+    try {
+      var o = JSON.parse(text);
+      if (o.app !== "barber") throw new Error("not barber");
+      var A = (o.appointments || []).map(function (a) {
+        var date = a.date, time = a.time;
+        if ((!date || !time) && a.startMillis) { var d = new Date(+a.startMillis); date = ymd(d); time = pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+        if (!a.name || !date || !time) throw new Error("bad");
+        return { id: a.id, name: String(a.name), phone: String(a.phone || ""), price: parseInt(a.price, 10) || 0, date: String(date), time: String(time), done: !!a.done,
+          groupId: +a.groupId || 0, noShow: !!a.noShow, service: String(a.service || ""), category: String(a.category || ""), unpaid: !!a.unpaid };
+      });
+      var B = (o.blocks || []).map(function (b) { return { id: b.id, date: String(b.day), from: +b.fromMin, to: +b.toMin, note: String(b.note || "") }; });
+      pendingImport = { a: A, b: B, o: o }; impMsg(""); $("impConfirm").hidden = false;
+    } catch (e) { pendingImport = null; $("impConfirm").hidden = true; impMsg("Файл дұрыс емес, деректер өзгерген жоқ", true); }
+  }
+  $("impFile").addEventListener("change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var r = new FileReader(); r.onload = function () { $("impIn").value = String(r.result); tryImport(String(r.result)); };
+    r.onerror = function () { impMsg("Файлды ашу мүмкін болмады", true); }; r.readAsText(f);
+  });
+  $("impGo").addEventListener("click", function () { tryImport($("impIn").value); });
+  $("impNo").addEventListener("click", function () { pendingImport = null; $("impConfirm").hidden = true; });
+  $("impYes").addEventListener("click", function () {
+    if (!pendingImport) return;
+    var o = pendingImport.o;
+    appts = pendingImport.a; blocks = pendingImport.b;
+    if (Array.isArray(o.services)) D.sv = o.services.map(function (s) { return { id: s.id, name: String(s.name), price: parseInt(s.price, 10) || 0 }; });
+    if (Array.isArray(o.notes)) { D.nt = {}; o.notes.forEach(function (n) { D.nt[String(n.ckey)] = String(n.note); }); }
+    if (Array.isArray(o.waits)) D.w = o.waits.map(function (w) { return { id: w.id, name: String(w.name), phone: String(w.phone || ""), day: String(w.day), note: String(w.note || "") }; });
+    if (Array.isArray(o.expenses)) D.ex = o.expenses.map(function (e) { return { id: e.id, day: String(e.day), amount: parseInt(e.amount, 10) || 0, note: String(e.note || "") }; });
+    persist(); $("impConfirm").hidden = true;
+    impMsg("Қайтарылды: " + appts.length + " жазылу"); pendingImport = null; renderAll();
+  });
+
+  /* ---------- жазылу парағы ---------- */
+  function busySet(date) {
+    var s = {};
+    appts.forEach(function (a) { if (a.date === date && !a.noShow && (!editing || a.id !== editing.id)) s[a.time] = true; });
+    blocksOn(date).forEach(function (b) { SLOTS.forEach(function (x) { var m = toMin(x); if (m >= b.from && m < b.to) s[x] = true; }); });
+    return s;
+  }
+  function people() { return 1 + form.extra.length; }
+  function fits(i, busy, n) {
+    n = n || people();
+    if (i < 0 || i + n > SLOTS.length) return false;
+    for (var k = 0; k < n; k++) if (busy[SLOTS[i + k]]) return false;
+    return true;
+  }
+  function renderQuick() {
+    var q = $("quick"); q.textContent = "";
+    [["Кеше", -1], ["Бүгін", 0], ["Ертең", 1], ["1 апта", 7], ["1 ай", 30]].forEach(function (p) {
+      var d = ymd(addDays(today, p[1])), b = h("button", "chip", p[0]); b.type = "button"; b.setAttribute("aria-pressed", String(form.date === d));
+      b.addEventListener("click", function () { form.date = d; syncForm(); }); q.appendChild(b);
+    });
+  }
+  function isPast() { return !!form.time && atTime({ date: form.date, time: form.time }).getTime() < Date.now(); }
+  function renderSlots() {
+    var box = $("slots"); box.textContent = "";
+    var busy = busySet(form.date);
+    if (form.time && !fits(SLOTS.indexOf(form.time), busy)) form.time = null;
+    var si = form.time ? SLOTS.indexOf(form.time) : -1;
+    SLOTS.forEach(function (tt, i) {
+      var b = h("button", "chip", tt, true); b.type = "button";
+      b.disabled = !fits(i, busy);
+      b.setAttribute("aria-pressed", String(si >= 0 && i >= si && i < si + people()));
+      b.addEventListener("click", function () { form.time = tt; renderSlots(); validate(); });
+      box.appendChild(b);
+    });
+    var rn = $("rangeNote");
+    if (people() > 1 && form.time) { rn.hidden = false; rn.textContent = t("Жазылу: " + form.time + "–" + fmtMin(toMin(form.time) + 30 * people()) + " · " + people() + " адам"); }
+    else rn.hidden = true;
+    $("cameWrap").hidden = !(isPast() && !editing);
+  }
+  function renderCat() {
+    var box = $("cat"); box.textContent = "";
+    [["adult", "Ересек"], ["child", "Бала"]].forEach(function (p) {
+      var b = h("button", "chip", p[1]); b.type = "button"; b.setAttribute("aria-pressed", String(form.cat === p[0]));
+      b.addEventListener("click", function () { form.cat = form.cat === p[0] ? "" : p[0]; renderCat(); }); box.appendChild(b);
+    });
+    var sc = $("svcChips"); sc.textContent = "";
+    D.sv.forEach(function (s) {
+      var b = h("button", "chip", s.name + (s.price ? " · " + s.price : ""), true); b.type = "button"; b.setAttribute("aria-pressed", String(form.service === s.name));
+      b.addEventListener("click", function () { form.service = form.service === s.name ? "" : s.name; if (form.service && s.price) $("fPrice").value = s.price; renderCat(); }); sc.appendChild(b);
+    });
+  }
+  function renderRep() {
+    $("repWrap").hidden = !!editing;
+    if (editing) return;
+    var rc = $("repChips"); rc.textContent = "";
+    [["Қайталамау", 0], ["Әр апта", 7], ["Әр 2 апта", 14], ["Әр 4 апта", 28]].forEach(function (p) {
+      var b = h("button", "chip", p[0]); b.type = "button"; b.setAttribute("aria-pressed", String(form.rep === p[1]));
+      b.addEventListener("click", function () { form.rep = p[1]; renderRep(); }); rc.appendChild(b);
+    });
+    var cn = $("repCount"); cn.hidden = form.rep === 0; cn.textContent = "";
+    [2, 4, 8, 12].forEach(function (n) {
+      var b = h("button", "chip", n + " рет"); b.type = "button"; b.setAttribute("aria-pressed", String(form.repN === n));
+      b.addEventListener("click", function () { form.repN = n; renderRep(); }); cn.appendChild(b);
+    });
+    $("repNote").hidden = form.rep === 0; $("repNote").textContent = t("Бос емес немесе жабық күндер өткізіледі");
+  }
+  function renderPeople() {
+    var box = $("people"); box.textContent = "";
+    $("addPerson").hidden = !!editing || form.extra.length >= 3;
+    if (editing) return;
+    form.extra.forEach(function (p, idx) {
+      var wrap = h("div", "people"); wrap.appendChild(h("div", "lbl", (idx + 2) + "-адам"));
+      var row = h("div", "prow");
+      var l1 = h("label", "", "Аты"), i1 = h("input"); i1.type = "text"; i1.value = p.name; i1.autocomplete = "off";
+      i1.addEventListener("input", function () { p.name = i1.value; validate(); }); l1.appendChild(i1);
+      var l2 = h("label", "", "₸"), i2 = h("input"); i2.type = "text"; i2.inputMode = "numeric"; i2.value = p.price;
+      i2.addEventListener("input", function () { i2.value = i2.value.replace(/\D/g, ""); p.price = i2.value; }); l2.appendChild(i2);
+      var l3 = h("label", "", "Категория"), s3 = h("select");
+      [["", "—"], ["adult", t("Ересек")], ["child", t("Бала")]].forEach(function (o) { var op = h("option", "", o[1], true); op.value = o[0]; if (p.cat === o[0]) op.selected = true; s3.appendChild(op); });
+      s3.addEventListener("change", function () { p.cat = s3.value; }); l3.appendChild(s3);
+      var x = h("button", "x", "✕", true); x.type = "button"; x.setAttribute("aria-label", t("Өшіру"));
+      x.addEventListener("click", function () { form.extra.splice(idx, 1); renderPeople(); renderSlots(); validate(); });
+      row.appendChild(l1); row.appendChild(l2); row.appendChild(x); wrap.appendChild(row);
+      var r2 = h("div", "chips"); [["adult", "Ересек"], ["child", "Бала"]].forEach(function (o) {
+        var b = h("button", "chip", o[1]); b.type = "button"; b.setAttribute("aria-pressed", String(p.cat === o[0]));
+        b.addEventListener("click", function () { p.cat = p.cat === o[0] ? "" : o[0]; renderPeople(); }); r2.appendChild(b);
+      });
+      wrap.appendChild(r2); box.appendChild(wrap);
+    });
+  }
+  $("addPerson").addEventListener("click", function () { form.extra.push({ name: "", price: "", cat: "" }); renderPeople(); renderSlots(); validate(); });
+  function renderSugg() {
+    var box = $("sugg"); box.textContent = "";
+    var n = $("fName").value.trim().toLowerCase();
+    if (editing || !n) return;
+    buildClients().filter(function (c) { return c.name.toLowerCase().indexOf(n) >= 0 && c.name.toLowerCase() !== n; }).slice(0, 4).forEach(function (c) {
+      box.appendChild(btn(c.name, "chip", function () {
+        $("fName").value = c.name; $("fPhone").value = c.phone;
+        if (!$("fPrice").value && c.lastPrice) $("fPrice").value = c.lastPrice;
+        if (!form.cat && c.category) form.cat = c.category;
+        renderSugg(); renderCat(); renderWarn(); validate();
+      }));
+    });
+  }
+  function renderWarn() {
+    var box = $("warnBox"); box.textContent = "";
+    var c = clientByForm($("fName").value, $("fPhone").value);
+    if (!c) return;
+    if (!form.cat && c.category && !editing) { form.cat = c.category; renderCat(); }
+    if (c.noShows >= 1) box.appendChild(h("div", "warnb red", "Назар аударыңыз: бұл клиент " + c.noShows + " рет келмеген"));
+    if (c.debt > 0) box.appendChild(h("div", "warnb red", "Бұл клиенттің төленбеген қарызы бар: " + c.debt + " ₸"));
+    if (D.nt[c.key]) box.appendChild(h("div", "warnb", t("Жазба: ") + D.nt[c.key], true));
+  }
+  function changed() { return !!editing && (editing.date !== form.date || editing.time !== form.time); }
+  function validate() {
+    $("save").disabled = !($("fName").value.trim() && form.time && form.extra.every(function (e) { return e.name.trim(); }));
+    $("saveWa").hidden = !(changed() && $("fPhone").value.trim()); $("saveWa").disabled = $("save").disabled;
+  }
+  function syncForm() { $("fDate").value = form.date; renderQuick(); renderPeople(); renderSlots(); renderCat(); renderRep(); renderWarn(); validate(); }
+  function openSheet(a, date, name, phone, waitId) {
+    editing = a || null;
+    form = { date: a ? a.date : (date || selDate), time: a ? a.time : null, extra: [], cat: a ? a.category : "", service: a ? a.service : "", rep: 0, repN: 4, waitId: waitId || 0 };
+    $("sheetTitle").textContent = t(a ? "Жазылуды өзгерту" : "Жаңа жазылу");
+    $("fName").value = a ? a.name : (name || ""); $("fPhone").value = a ? a.phone : (phone || ""); $("fPrice").value = a && a.price ? a.price : "";
+    $("fUnpaid").checked = !!(a && a.unpaid); $("fCame").checked = false;
+    $("del").hidden = !a; $("delGroup").hidden = !(a && a.groupId);
+    $("scrim").hidden = false; syncForm(); renderSugg();
+  }
+  function closeSheet() { $("scrim").hidden = true; }
+  $("fDate").addEventListener("change", function () { if (this.value) { form.date = this.value; syncForm(); } });
+  $("fName").addEventListener("input", function () { validate(); renderSugg(); renderWarn(); });
+  $("fPhone").addEventListener("input", function () { renderWarn(); validate(); });
+  $("fPrice").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
+  function doSave(whats) {
+    var rec = { name: $("fName").value.trim(), phone: $("fPhone").value.trim(), price: parseInt($("fPrice").value, 10) || 0, date: form.date, time: form.time };
+    var unpaid = $("fUnpaid").checked, skipped = 0, waUrl = "";
+    if (editing) {
+      var wasMoved = changed();
+      Object.assign(editing, rec, { category: form.cat, service: form.service, unpaid: unpaid });
+      if (whats && wasMoved && rec.phone) waUrl = waLink(rec.phone, Msg.moved(editing));
+    } else {
+      var persons = [{ name: rec.name, price: rec.price, cat: form.cat, service: form.service }].concat(form.extra.map(function (e) { return { name: e.name.trim(), price: parseInt(e.price, 10) || 0, cat: e.cat || "", service: "" }; }));
+      var i0 = SLOTS.indexOf(form.time), n = form.rep ? form.repN : 1, came = $("fCame").checked;
+      for (var k = 0; k < n; k++) {
+        var d = ymd(addDays(parse(form.date), form.rep * k));
+        if (k > 0) {
+          var bs = {}; appts.forEach(function (a) { if (a.date === d && !a.noShow) bs[a.time] = true; });
+          blocksOn(d).forEach(function (b) { SLOTS.forEach(function (x) { var m = toMin(x); if (m >= b.from && m < b.to) bs[x] = true; }); });
+          if (!fits(i0, bs, persons.length)) { skipped++; continue; }
+        }
+        var lead = 0;
+        persons.forEach(function (pr, j) {
+          var a = { id: uid(), name: pr.name, phone: rec.phone, price: pr.price, date: d, time: SLOTS[i0 + j], done: false, groupId: 0, noShow: false, service: pr.service, category: pr.cat, unpaid: unpaid };
+          if (k === 0 && came && atTime(a).getTime() < Date.now()) a.done = true;
+          if (persons.length > 1) { if (j === 0) lead = a.id; a.groupId = lead; }
+          appts.push(a);
+        });
+      }
+    }
+    if (form.waitId) D.w = D.w.filter(function (w) { return w.id !== form.waitId; });
+    persist(); selDate = rec.date; tab = 0; closeSheet(); renderAll(true);
+    if (skipped) toast("Бос емес болғандықтан " + skipped + " күн өткізілді");
+    if (waUrl) window.open(waUrl, "_blank");
+  }
+  $("save").addEventListener("click", function () { doSave(false); });
+  $("saveWa").addEventListener("click", function () { doSave(true); });
+  function removeOne(a) {
+    appts = appts.filter(function (x) { return x !== a; });
+    if (a.groupId) {
+      var rest = appts.filter(function (x) { return x.groupId === a.groupId; }).sort(function (x, y) { return x.time < y.time ? -1 : 1; });
+      if (rest.length === 1) rest[0].groupId = 0;
+      else if (rest.length > 1) rest.forEach(function (x) { x.groupId = rest[0].id; });
+    }
+  }
+  $("del").addEventListener("click", function () { removeOne(editing); persist(); closeSheet(); renderAll(); });
+  $("delGroup").addEventListener("click", function () { var g = editing.groupId; appts = appts.filter(function (x) { return x.groupId !== g; }); persist(); closeSheet(); renderAll(); });
+  $("close").addEventListener("click", closeSheet);
+  $("scrim").addEventListener("click", function (e) { if (e.target === this) closeSheet(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("scrim").hidden) closeSheet(); });
+  $("fab").addEventListener("click", function () { openSheet(null); });
+  $("jump").addEventListener("change", function () { if (this.value) { selDate = this.value; renderAll(true); } });
+  $("barHome").addEventListener("click", function () { if (tab === 8) { tab = 0; renderAll(true); } window.scrollTo(0, 0); });
+  $("barSet").addEventListener("click", function () { tab = 8; renderAll(); window.scrollTo(0, 0); });
+
+  /* ---------- баптау ---------- */
+  function setChips(parent, opts, cur, fn, raw) {
+    var box = h("div", "chips");
+    opts.forEach(function (o) {
+      var b = h("button", "chip", o[1], !!raw); b.type = "button"; b.setAttribute("aria-pressed", String(String(cur) === String(o[0])));
+      b.addEventListener("click", function () { fn(o[0]); }); box.appendChild(b);
+    });
+    parent.appendChild(box);
+  }
+  function save() { persist(); }
+  function renderSettings() {
+    var v = $("v8"); v.textContent = "";
+    var b1 = h("div", "box"); b1.appendChild(h("h3", "gold", "Көрініс"));
+    b1.appendChild(h("div", "lbl", "Тіл"));
+    setChips(b1, [["kk", "Қазақша"], ["ru", "Русский"]], D.cfg.lang, function (x) { D.cfg.lang = x; save(); applyLang(); renderAll(); }, true);
+    b1.appendChild(h("div", "lbl", "Тақырып"));
+    setChips(b1, [["dark", "Қараңғы"], ["light", "Ашық"], ["system", "Жүйе бойынша"]], D.cfg.theme, function (x) { D.cfg.theme = x; save(); applyTheme(); renderSettings(); });
+    b1.appendChild(h("div", "lbl", "Түс палитрасы"));
+    var pal = h("div", "pal");
+    PALETTES.forEach(function (p) {
+      var b = h("button", ""); b.type = "button"; b.style.background = p[2]; b.setAttribute("aria-label", t(p[1]));
+      b.setAttribute("aria-pressed", String(D.cfg.palette === p[0]));
+      b.addEventListener("click", function () { D.cfg.palette = p[0]; save(); applyTheme(); renderSettings(); }); pal.appendChild(b);
+    });
+    b1.appendChild(pal);
+    b1.appendChild(h("div", "lbl", "Қаріп өлшемі"));
+    setChips(b1, [["0.85", "Кіші"], ["1", "Қалыпты"], ["1.15", "Үлкен"], ["1.3", "Өте үлкен"]], String(D.cfg.font || 1), function (x) { D.cfg.font = parseFloat(x); save(); applyTheme(); renderSettings(); });
+    v.appendChild(b1);
+
+    var b2 = h("div", "box"); b2.appendChild(h("h3", "", "Хабарландырулар"));
+    b2.appendChild(h("p", "small", "iPhone қосымша жабық кезде хабарлама жібере алмайды. Сондықтан жазуларды iPhone күнтізбесіне қосыңыз: ол алдыңғы күні 18:00-де және 15 минут қалғанда дыбыспен ескертеді. Жазуды өзгертсеңіз, қайта қосыңыз, көшірме болмайды."));
+    b2.appendChild(btn("Көшірме", "ghost", function () { tab = 7; renderAll(true); }));
+    v.appendChild(b2);
+
+    var b3 = h("div", "box"); b3.appendChild(h("h3", "", "PIN-код"));
+    b3.appendChild(h("p", "small", "Қосымшаны ашқанда PIN сұралады. Клиент деректерін басқа адам көрмейді."));
+    if (!D.cfg.pin) {
+      var inp = h("input"); inp.type = "password"; inp.inputMode = "numeric"; inp.maxLength = 4; inp.placeholder = t("4 сан"); inp.setAttribute("aria-label", t("4 сан"));
+      inp.addEventListener("input", function () { inp.value = inp.value.replace(/\D/g, "").slice(0, 4); ok.disabled = inp.value.length !== 4; });
+      var ok = h("button", "primary", "PIN қою"); ok.type = "button"; ok.disabled = true;
+      ok.addEventListener("click", function () {
+        var salt = String(Math.random()).slice(2);
+        hashPin(inp.value, salt).then(function (hh) { D.cfg.pin = hh; D.cfg.salt = salt; save(); renderSettings(); toast("PIN қосулы"); });
+      });
+      b3.appendChild(inp); b3.appendChild(ok);
+    } else {
+      b3.appendChild(h("div", "good", "PIN қосулы"));
+      b3.appendChild(btn("PIN өшіру", "ghost", function () { D.cfg.pin = ""; D.cfg.salt = ""; save(); renderSettings(); }));
+    }
+    v.appendChild(b3);
+  }
+
+  /* ---------- PIN бұғаты ---------- */
+  function hashPin(pin, salt) {
+    var s = salt + ":" + pin;
+    if (window.crypto && crypto.subtle && window.TextEncoder) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join("");
+      });
+    }
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+    return Promise.resolve("f" + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16));
+  }
+  var entry = "";
+  function drawLock() {
+    var dots = $("dots"); dots.textContent = "";
+    for (var i = 0; i < 4; i++) dots.appendChild(h("i", i < entry.length ? "on" : ""));
+  }
+  (function () {
+    var keys = $("keys");
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"].forEach(function (k) {
+      var b = h("button", k ? "" : "ph", k, true); b.type = "button";
+      b.addEventListener("click", function () {
+        if (k === "⌫") entry = entry.slice(0, -1); else if (k && entry.length < 4) entry += k;
+        $("lockErr").textContent = ""; drawLock();
+        if (entry.length === 4) {
+          hashPin(entry, D.cfg.salt).then(function (hh) {
+            if (hh === D.cfg.pin) { $("lock").hidden = true; entry = ""; drawLock(); }
+            else { $("lockErr").textContent = t("Қате PIN, қайталаңыз"); entry = ""; drawLock(); }
+          });
+        }
+      });
+      keys.appendChild(b);
+    });
+  })();
+  var hiddenAt = 0;
+  function lockNow() { if (D.cfg.pin) { entry = ""; drawLock(); $("lockErr").textContent = ""; $("lock").hidden = false; } }
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) hiddenAt = Date.now();
+    else if (hiddenAt && Date.now() - hiddenAt > 60000) lockNow();
+  });
+
+  /* iPhone Safari-де орнату нұсқауы (орнатылған болса, көрсетілмейді) */
+  (function () {
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+    var seen = false; try { seen = localStorage.getItem("hint-seen") === "1"; } catch (e) {}
+    $("installHint").hidden = !(ios && !standalone && !seen);
+    $("hintClose").addEventListener("click", function () { $("installHint").hidden = true; try { localStorage.setItem("hint-seen", "1"); } catch (e) {} });
+  })();
+
+  function renderAll(center) {
+    renderTabs(); renderStrip(); renderList(); renderWaits(); renderStats(); renderExpenses(); renderClients(); renderServices(); renderBlocks(); renderSettings();
+    if (tab === 0 && center) centerStrip();
+  }
+  collectStatic();
+  applyTheme();
+  if (D.cfg.lang === "ru") applyLang();
+  renderAll(true);
+  lockNow();
+
+  if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+})();
+</script>
+</body>
+</html>
