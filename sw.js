@@ -1,5 +1,5 @@
 // Желіге алдымен сұрайды, желі жоқ болса, сақталған нұсқаны береді: қосымша интернетсіз де ашылады.
-var CACHE = "shashtaraz-v3";
+var CACHE = "shashtaraz-v4";
 var FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", function (e) {
