@@ -185,6 +185,14 @@ label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
 
   <div class="view" id="v0">
     <div class="strip" id="strip"></div>
+    <button type="button" class="sbtn" id="wiOpen" style="width:100%;min-height:46px;margin:0 0 10px">+ Сырттан келген клиент</button>
+    <div class="box" id="wiBox" hidden>
+      <h3 class="gold">Сырттан келген клиент</h3>
+      <input type="text" inputmode="numeric" id="wiPrice" placeholder="Бағасы" aria-label="Бағасы">
+      <div id="wiPay"></div>
+      <p class="small">Аты-жөнін кейін жазып, қалыпты клиентке айналдыруға болады.</p>
+      <button type="button" class="sbtn gold" id="wiGo">Келді</button>
+    </div>
     <div id="dayBlocks"></div>
     <div id="waitHint"></div>
     <div class="stats" id="stats"></div>
@@ -215,6 +223,8 @@ label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
       <div id="chart"></div>
       <p class="small" id="yearSum"></p>
     </div>
+    <div class="box" id="avgBox"></div>
+    <div class="box" id="payBox"></div>
     <div class="box" id="patterns"></div>
     <p class="small">Түсім — «Келді» деп белгіленген жазулардың бағасы.</p>
   </div>
@@ -224,11 +234,12 @@ label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
       <h3>Шығын қосу</h3>
       <label>Сомасы, ₸<input type="text" id="eAmt" inputmode="numeric" placeholder="50000"></label>
       <div class="chips" id="eQuick"></div>
-      <label>Не үшін<input type="text" id="eNote" autocomplete="off"></label>
+      <label>Қосымша жазба (міндетті емес)<input type="text" id="eNote" autocomplete="off"></label>
       <label>Күні<input type="date" id="eDay"></label>
       <button class="primary" id="eAdd" type="button">Қосу</button>
     </div>
     <div class="box" id="eSum"></div>
+    <div class="box" id="eStat"></div>
     <div class="list" id="eList"></div>
   </div>
 
@@ -243,11 +254,14 @@ label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
       <button class="primary" id="ncSave" type="button" disabled>Сақтау</button>
       <button class="del" id="ncCancel" type="button" style="color:var(--muted)">Бас тарту</button>
     </div>
+    <div id="due"></div>
     <div id="lapsed"></div>
     <div id="debtors"></div>
+    <div class="box" id="cStats"></div>
     <div id="top10"></div>
     <div class="stats" id="clientCount"></div>
     <input type="search" id="cq" placeholder="Іздеу: аты немесе нөмірі" aria-label="Клиент іздеу">
+    <div id="cFilt"></div>
     <div class="list" id="clients"></div>
   </div>
 
@@ -346,6 +360,8 @@ label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
     <div class="chips" id="cat"></div>
     <div class="chips" id="svcChips"></div>
     <label>Бағасы, ₸<input type="text" id="fPrice" inputmode="numeric" placeholder="4000"></label>
+    <div class="lbl">Төлем түрі</div>
+    <div class="chips" id="payChips"></div>
     <div class="people" id="people"></div>
     <button class="del" id="addPerson" type="button" style="color:var(--gold);justify-self:start;min-height:36px">+ Тағы адам қосу (мысалы, әке мен бала)</button>
     <div class="people" id="repWrap">
@@ -754,6 +770,76 @@ $n рет	$n раз
 Күнтізбе арқылы еске салғыш	Напоминания через календарь
 Қосымшаны құлыптау	Блокировка приложения
 + Жаңа клиент	+ Новый клиент
+Төлем түрі	Способ оплаты
+Төлем түрі бойынша	По способу оплаты
+Қолма-қол	Наличные
+Бұл кезеңде түсім жоқ.	В этом периоде нет выручки.
+Барлығы: $x	Всего: $x
+Төлем түрі жазылуда таңдалады. Бұрынғы жазулар қолма-қолға есептеледі.	Способ оплаты выбирается в записи. Прежние записи считаются наличными.
+Түскі ас	Обед
+Көлік	Транспорт
+Байланыс	Связь
+Жарнама	Реклама
+Басқа	Другое
+Қосымша жазба (міндетті емес)	Примечание (необязательно)
+Шығын статистикасы	Статистика расходов
+Бұл айда шығын жоқ.	В этом месяце расходов нет.
+Күніне орта есеппен: $x	В среднем в день: $x
+Клиенттер статистикасы	Статистика клиентов
+Әзірге «Келді» деп белгіленген клиент жоқ.	Пока нет клиентов с отметкой «Пришёл».
+Барлық клиент	Всего клиентов
+Осы айда жаңа келгендер	Новых в этом месяце
+Қайта келгендер	Вернувшиеся
+Орташа чек	Средний чек
+Бір клиент орта есеппен	В среднем на клиента
+Келу арасы орта есеппен	Интервал между визитами
+60 күннен астам келмеген	Не приходили более 60 дней
+Ересек / бала	Взрослые / дети
+Келмегендер	Не пришли
+Ең көп жазылатын күн	Самый загруженный день
+Ең көп жазылатын уақыт	Самое популярное время
+Бұғаттау	Заблокировать
+Бұғаттан шығару	Разблокировать
+Бұғатталған	Заблокирован
+Клиентті бұғаттау керек пе?	Заблокировать клиента?
+⚠ Бұғатталған клиент. Жазсаңыз да болады, бірақ ойланыңыз.	⚠ Заблокированный клиент. Записать можно, но подумайте.
+Топ 5 клиент (келу саны бойынша)	Топ-5 клиентов (по числу визитов)
+Орташа табыс	Средний доход
+Осы жыл	Этот год
+Барлығы	Всего
+Жұмыс күндері	Рабочие дни
+Жұмыс күніне орта	В среднем за рабочий день
+Күнтізбелік күніне орта	В среднем за календарный день
+Айына орта	В среднем в месяц
+Жұмыс күні: кемінде бір клиент «Келді» деп белгіленген күн. Күнтізбелік күн: демалыс күндерін қоса.	Рабочий день: день, когда хотя бы один клиент отмечен как «Пришёл». Календарный день: включая выходные.
++ Сырттан келген клиент	+ Клиент с улицы
+Сырттан келген клиент	Клиент с улицы
+Аты-жөнін кейін жазып, қалыпты клиентке айналдыруға болады.	Имя можно указать позже — гость станет обычным клиентом.
+Қонақтар (аты жоқ)	Гости (без имени)
+Бағасы	Цена
+Қолма-қол	Наличными
+Жаңа	Новые
+Тұрақты	Постоянные
+Ұзақ келмеген	Давно не были
+Қарызы бар	С долгом
+Бұғатталған	Заблокированные
+Сұрыптау:	Сортировка:
+Соңғы келген	Последний визит
+Көп келген	Чаще всего
+Көп төлеген	Больше всего оплатили
+Аты	По имени
+Тегтер	Теги
+Өз тегіңіз	Свой тег
+Қосу	Добавить
+Кешігеді	Опаздывает
+Балаларымен	С детьми
+Сақал	Борода
+Бояу	Окрашивание
+Орташа келу аралығына жеткен клиенттер. Жазылуға шақырыңыз.	Клиенты, у которых подошло обычное время визита. Пригласите записаться.
+Жаңа жазылу	Новая запись
+Келетін уақыты болды: $n	Пора записаться: $n
+Әдетте $g күн сайын келеді · соңғысына $s күн болды	Обычно приходит раз в $g дн. · последний визит $s дн. назад
+Сәлем, $name! Келетін уақытыңыз болып қалды. Жазылайық па? Қай күні, қай уақытқа ыңғайлы?	Здравствуйте, $name! Подошло время визита. Запишемся? Когда вам удобно?
 </script>
 <script>
 (function () {
@@ -819,17 +905,17 @@ $n рет	$n раз
 
   /* ---------- деректер ---------- */
   var today = new Date(); today.setHours(0, 0, 0, 0);
-  var D = { a: [], b: [], sv: [], nt: {}, w: [], ex: [], mc: [], cfg: { lang: "kk", theme: "dark", palette: "gold", font: 1, pin: "", salt: "" } };
+  var D = { a: [], b: [], sv: [], nt: {}, w: [], ex: [], mc: [], bl: [], tg: {}, cfg: { lang: "kk", theme: "dark", palette: "gold", font: 1, pin: "", salt: "" } };
   try {
     var st = JSON.parse(localStorage.getItem(KEY) || "null");
     if (st && Array.isArray(st.a)) {
       D.a = st.a; D.b = Array.isArray(st.b) ? st.b : [];
       D.sv = Array.isArray(st.sv) ? st.sv : []; D.nt = st.nt && typeof st.nt === "object" ? st.nt : {};
-      D.w = Array.isArray(st.w) ? st.w : []; D.ex = Array.isArray(st.ex) ? st.ex : []; D.mc = Array.isArray(st.mc) ? st.mc : [];
+      D.w = Array.isArray(st.w) ? st.w : []; D.ex = Array.isArray(st.ex) ? st.ex : []; D.mc = Array.isArray(st.mc) ? st.mc : []; D.bl = Array.isArray(st.bl) ? st.bl : []; D.tg = st.tg && typeof st.tg === "object" ? st.tg : {};
       if (st.cfg) Object.keys(D.cfg).forEach(function (k) { if (st.cfg[k] != null) D.cfg[k] = st.cfg[k]; });
     }
   } catch (e) {}
-  D.a.forEach(function (a) { a.groupId = a.groupId || 0; a.noShow = !!a.noShow; a.service = a.service || ""; a.category = a.category || ""; a.unpaid = !!a.unpaid; });
+  D.a.forEach(function (a) { a.groupId = a.groupId || 0; a.noShow = !!a.noShow; a.service = a.service || ""; a.category = a.category || ""; a.unpaid = !!a.unpaid; a.pay = a.pay || ""; });
   var appts = D.a, blocks = D.b;
   var persist = function () { D.a = appts; D.b = blocks; try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
@@ -862,6 +948,7 @@ $n рет	$n раз
     moved: function (a) { return tpl("Сәлеметсіз бе, $name! Жазылуыңыз $d күні сағат $t-ке ауыстырылды. Келісесіз бе?", { name: a.name, d: fmtLong.format(parse(a.date)), t: a.time }); },
     free: function (w) { return tpl("Сәлеметсіз бе, $name! $d күніне бос уақыт шықты. Келесіз бе?", { name: w.name, d: fmtLong.format(parse(w.day)) }); },
     miss: function (c) { return tpl("Сәлеметсіз бе, $name! Сізді көптен көрмедік. Шашты жаңартатын уақыт болды ма? Қашан ыңғайлы екенін жазыңыз.", { name: c.name }); },
+    rebook: function (c) { return tpl("Сәлем, $name! Келетін уақытыңыз болып қалды. Жазылайық па? Қай күні, қай уақытқа ыңғайлы?", { name: c.name }); },
     debt: function (c) { return tpl("Сәлеметсіз бе, $name! Алдыңғы жазылудан $amount ₸ төленбей қалған екен. Ыңғайлы кезде аударып жіберсеңіз, рақмет.", { name: c.name, amount: c.debt }); }
   };
 
@@ -1268,7 +1355,7 @@ $n рет	$n раз
   }
   function renderStats() {
     var tt = totals(), M = tt.M, cur = tt.cur, prev = tt.prev, i;
-    renderToday(); renderRecord(tt); renderNet(tt); renderPatterns();
+    renderToday(); renderRecord(tt); renderNet(tt); renderAvgBox(); renderPayBox(); renderPatterns();
     var lastM = M > 0 ? cur[M - 1] : prev[11], ytd = 0, ytdPrev = 0;
     for (i = 0; i <= M; i++) { ytd += cur[i]; ytdPrev += prev[i]; }
     var box = $("cmp"); box.textContent = "";
@@ -1292,14 +1379,27 @@ $n рет	$n раз
 
   /* ---------- шығындар ---------- */
   $("eDay").value = ymd(today);
-  ["Жалдау", "Материал", "Коммуналдық", "Құрал-сайман"].forEach(function (n) {
-    $("eQuick").appendChild(btn(n, "chip", function () { $("eNote").value = t(n); }));
-  });
+  var EXP_CATS = ["Түскі ас", "Жалдау", "Материал", "Құрал-сайман", "Коммуналдық", "Көлік", "Байланыс", "Жарнама", "Басқа"];
+  var expCat = "", eStatM = 0, payPer = 0;
+  function catOf(e) {
+    if (e.cat) return e.cat;
+    var n = (e.note || "").trim().toLowerCase(), r = "Басқа";
+    EXP_CATS.some(function (c) { if (c.toLowerCase() === n) { r = c; return true; } });
+    return r;
+  }
+  function renderExpCats() {
+    var box = $("eQuick"); box.textContent = "";
+    EXP_CATS.forEach(function (n) {
+      var b = btn(n, "chip", function () { expCat = expCat === n ? "" : n; renderExpCats(); });
+      b.setAttribute("aria-pressed", String(expCat === n)); box.appendChild(b);
+    });
+  }
+  renderExpCats();
   $("eAmt").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
   $("eAdd").addEventListener("click", function () {
     var amt = parseInt($("eAmt").value, 10); if (!amt) return;
-    D.ex.push({ id: uid(), day: $("eDay").value || ymd(today), amount: amt, note: $("eNote").value.trim() });
-    $("eAmt").value = ""; $("eNote").value = ""; persist(); renderAll(); toast("Жазылды ✓");
+    D.ex.push({ id: uid(), day: $("eDay").value || ymd(today), amount: amt, note: $("eNote").value.trim(), cat: expCat });
+    $("eAmt").value = ""; $("eNote").value = ""; expCat = ""; renderExpCats(); persist(); renderAll(); toast("Жазылды ✓");
   });
   function renderExpenses() {
     var Y = today.getFullYear(), M = today.getMonth(), inc = totals().cur[M], exp = monthExp(Y, M);
@@ -1307,6 +1407,7 @@ $n рет	$n раз
     box.appendChild(h("div", "", "Шығын: " + money(exp)));
     box.appendChild(h("div", "", "Түсім: " + money(inc)));
     box.appendChild(h("div", net_cls(inc - exp), t("Таза пайда") + ": " + money(inc - exp), true));
+    renderExpStat();
     var list = $("eList"); list.textContent = "";
     var pm = new Date(Y, M - 1, 1);
     var rows = D.ex.filter(function (e) { var d = parse(e.day); return (d.getFullYear() === Y && d.getMonth() === M) || (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()); })
@@ -1314,10 +1415,79 @@ $n рет	$n раз
     if (!rows.length) list.appendChild(h("div", "empty", "Осы және өткен айда шығын жоқ."));
     rows.forEach(function (e) {
       var c = h("div", "box"), r = h("div", "blk"), l = h("div");
-      l.appendChild(h("div", "nm", money(e.amount), true)); l.appendChild(h("div", "mut", dmy(parse(e.day)) + (e.note ? " · " + e.note : ""), true));
+      l.appendChild(h("div", "nm", money(e.amount), true)); l.appendChild(h("div", "mut", dmy(parse(e.day)) + " · " + t(catOf(e)) + (e.note && e.note.trim().toLowerCase() !== catOf(e).toLowerCase() ? " · " + e.note : ""), true));
       r.appendChild(l); r.appendChild(btn("Өшіру", "sbtn danger", function () { D.ex = D.ex.filter(function (x) { return x !== e; }); persist(); renderAll(); }));
       c.appendChild(r); list.appendChild(c);
     });
+  }
+
+  function chipRow(box, items, sel, on) {
+    var row = h("div", "chips");
+    items.forEach(function (n, i) { var b = btn(n, "chip", function () { on(i); }); b.setAttribute("aria-pressed", String(sel === i)); row.appendChild(b); });
+    box.appendChild(row);
+  }
+  function barRow(box, label, val, total) {
+    var r = h("div", "blk"); r.appendChild(h("span", "", label)); r.lastChild.style.flex = "1";
+    r.appendChild(h("b", "", money(val) + "  ·  " + (total ? Math.round(val * 100 / total) : 0) + "%", true)); box.appendChild(r);
+    var bar = h("div"); bar.style.cssText = "height:8px;border-radius:5px;background:var(--surface2,var(--line));overflow:hidden;margin:-2px 0 8px";
+    var f = h("div"); f.style.cssText = "height:100%;border-radius:5px;background:var(--gold);width:" + (total ? val * 100 / total : 0) + "%"; bar.appendChild(f); box.appendChild(bar);
+  }
+  function renderExpStat() {
+    var box = $("eStat"); box.textContent = "";
+    box.appendChild(h("h3", "", "Шығын статистикасы"));
+    chipRow(box, [t("Осы ай"), t("Өткен ай")], eStatM, function (i) { eStatM = i; renderExpStat(); });
+    var base = new Date(today.getFullYear(), today.getMonth() - eStatM, 1), by = {}, tot = 0;
+    D.ex.forEach(function (e) { var d = parse(e.day); if (d.getFullYear() === base.getFullYear() && d.getMonth() === base.getMonth()) { var k = catOf(e); by[k] = (by[k] || 0) + e.amount; tot += e.amount; } });
+    var keys = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; });
+    if (!tot) { box.appendChild(h("p", "small", "Бұл айда шығын жоқ.")); return; }
+    keys.forEach(function (k) { barRow(box, k, by[k], tot); });
+    box.appendChild(h("b", "", t("Барлығы: " + money(tot)), true));
+    var days = eStatM === 0 ? today.getDate() : new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+    box.appendChild(h("p", "small", t("Күніне орта есеппен: " + money(Math.round(tot / Math.max(1, days)))), true));
+  }
+  var avgPer = 0;
+  function renderAvgBox() {
+    var box = $("avgBox"); box.textContent = "";
+    box.appendChild(h("h3", "", "Орташа табыс"));
+    chipRow(box, [t("Осы ай"), t("Өткен ай"), t("Осы жыл"), t("Барлығы")], avgPer, function (i) { avgPer = i; renderAvgBox(); });
+    var Y = today.getFullYear(), M = today.getMonth(), pm = new Date(Y, M - 1, 1), sum = 0, days = {}, months = {}, first = null;
+    appts.forEach(function (a) {
+      if (!a.done || a.noShow) return;
+      var d = parse(a.date);
+      var ok = avgPer === 0 ? (d.getFullYear() === Y && d.getMonth() === M) : avgPer === 1 ? (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) : avgPer === 2 ? d.getFullYear() === Y : true;
+      if (!ok) return;
+      sum += a.price; days[a.date] = 1; months[d.getFullYear() + "-" + d.getMonth()] = 1;
+      if (!first || d < first) first = d;
+    });
+    if (!sum) { box.appendChild(h("p", "small", "Бұл кезеңде түсім жоқ.")); return; }
+    var wd = Object.keys(days).length, mc = Object.keys(months).length;
+    var cal = avgPer === 0 ? today.getDate() : avgPer === 1 ? new Date(Y, M, 0).getDate() : avgPer === 2 ? Math.round((today - new Date(Y, 0, 1)) / 86400000) + 1 : Math.round((today - first) / 86400000) + 1;
+    var rows = [["Түсім", money(sum)], ["Жұмыс күндері", String(wd)], ["Жұмыс күніне орта", money(Math.round(sum / Math.max(1, wd))), 1], ["Күнтізбелік күніне орта", money(Math.round(sum / Math.max(1, cal)))]];
+    if (avgPer >= 2) rows.push(["Айына орта", money(Math.round(sum / Math.max(1, mc))), 1]);
+    rows.forEach(function (r) { var d = h("div", "blk"); d.appendChild(h("span", "", r[0])); d.lastChild.style.flex = "1"; var v = h("b", "", r[1], true); if (r[2]) v.style.color = "var(--gold)"; d.appendChild(v); box.appendChild(d); });
+    box.appendChild(h("p", "small", "Жұмыс күні: кемінде бір клиент «Келді» деп белгіленген күн. Күнтізбелік күн: демалыс күндерін қоса."));
+  }
+  function renderPayBox() {
+    var box = $("payBox"); box.textContent = "";
+    box.appendChild(h("h3", "", "Төлем түрі бойынша"));
+    chipRow(box, [t("Осы ай"), t("Өткен ай"), t("Жыл басынан")], payPer, function (i) { payPer = i; renderPayBox(); });
+    var Y = today.getFullYear(), M = today.getMonth(), pm = new Date(Y, M - 1, 1), cash = 0, card = 0;
+    appts.forEach(function (a) {
+      if (!a.done || a.noShow) return;
+      var d = parse(a.date), ok = payPer === 0 ? (d.getFullYear() === Y && d.getMonth() === M) : payPer === 1 ? (d.getFullYear() === pm.getFullYear() && d.getMonth() === pm.getMonth()) : (d.getFullYear() === Y && d <= today);
+      if (ok) { if (a.pay === "card") card += a.price; else cash += a.price; }
+    });
+    var tot = cash + card;
+    if (!tot) { box.appendChild(h("p", "small", "Бұл кезеңде түсім жоқ.")); return; }
+    var sp = h("div"); sp.style.cssText = "display:flex;height:12px;gap:3px;margin:8px 0";
+    [[cash, "var(--gold)"], [card, "#e53935"]].forEach(function (x) { if (x[0] > 0) { var i = h("i"); i.style.cssText = "display:block;border-radius:6px;flex:" + x[0] + ";background:" + x[1]; sp.appendChild(i); } });
+    box.appendChild(sp);
+    [["Қолма-қол", cash], ["Kaspi", card]].forEach(function (x) {
+      var r = h("div", "blk"); r.appendChild(h("span", "", x[0])); r.lastChild.style.flex = "1";
+      r.appendChild(h("b", "", money(x[1]) + "  ·  " + Math.round(x[1] * 100 / tot) + "%", true)); box.appendChild(r);
+    });
+    box.appendChild(h("b", "", t("Барлығы: " + money(tot)), true));
+    box.appendChild(h("p", "small", "Төлем түрі жазылуда таңдалады. Бұрынғы жазулар қолма-қолға есептеледі."));
   }
 
   /* ---------- қызметтер ---------- */
@@ -1351,10 +1521,11 @@ $n рет	$n раз
   }
 
   /* ---------- клиенттер ---------- */
+  function isGuest(a) { return a.name === "Қонақ" && digits(a.phone).length < 10; }
   function clientKey(a) { var d = digits(a.phone); return d.length >= 10 ? d.slice(-10) : "n:" + a.name.trim().toLowerCase(); }
   function buildClients() {
     var g = {};
-    appts.forEach(function (a) { var k = clientKey(a); (g[k] = g[k] || []).push(a); });
+    appts.forEach(function (a) { if (isGuest(a)) return; var k = clientKey(a); (g[k] = g[k] || []).push(a); });
     var res = Object.keys(g).map(function (k) {
       var v = g[k].slice().sort(function (x, y) { return atTime(y) - atTime(x); });
       var ph = ""; v.some(function (a) { if (a.phone) { ph = a.phone; return true; } });
@@ -1383,11 +1554,96 @@ $n рет	$n раз
     all.some(function (c) { if ((d.length >= 10 && digits(c.phone).slice(-10) === d.slice(-10)) || (n && c.name.toLowerCase() === n)) { r = c; return true; } });
     return r;
   }
+  function isBlocked(key) { return (D.bl || []).some(function (b) { return b.key === key; }); }
+  var WDN = ["жексенбі", "дүйсенбі", "сейсенбі", "сәрсенбі", "бейсенбі", "жұма", "сенбі"];
+  function renderClientStats(all) {
+    var box = $("cStats"); box.textContent = "";
+    box.appendChild(h("h3", "gold", "Клиенттер статистикасы"));
+    var cl = all.filter(function (c) { return c.done.length > 0; });
+    if (!cl.length) { box.appendChild(h("p", "small", "Әзірге «Келді» деп белгіленген клиент жоқ.")); return; }
+    var now = new Date(), done = [], gaps = [], newM = 0, ret = 0, lost = 0, ad = 0, ch = 0;
+    cl.forEach(function (c) {
+      c.done.forEach(function (a) { done.push(a); });
+      if (c.first && c.first.getFullYear() === now.getFullYear() && c.first.getMonth() === now.getMonth()) newM++;
+      if (c.done.length >= 2) ret++;
+      var days = []; c.done.forEach(function (a) { if (days.indexOf(a.date) < 0) days.push(a.date); }); days.sort();
+      for (var i = 1; i < days.length; i++) gaps.push(Math.round((parse(days[i]) - parse(days[i - 1])) / 86400000));
+      if (c.lastDone && (now - c.lastDone) / 86400000 > 60) lost++;
+      if (c.category === "adult") ad++; else if (c.category === "child") ch++;
+    });
+    var guests = appts.filter(function (a) { return isGuest(a) && a.done && !a.noShow; }).length;
+    var sum = done.reduce(function (s, a) { return s + a.price; }, 0), byD = {}, byH = {}, ns = 0, vis = 0;
+    done.forEach(function (a) { var d = parse(a.date).getDay(), hh = parseInt(a.time, 10); byD[d] = (byD[d] || 0) + 1; byH[hh] = (byH[hh] || 0) + 1; });
+    appts.forEach(function (a) { if (a.noShow) ns++; if (a.done || a.noShow) vis++; });
+    var best = function (o) { var k = null; Object.keys(o).forEach(function (x) { if (k === null || o[x] > o[k]) k = x; }); return k; };
+    var bd = best(byD), bh = best(byH);
+    var rows = [
+      ["Барлық клиент", String(cl.length)], ["Осы айда жаңа келгендер", String(newM)],
+      ["Қайта келгендер", ret + " · " + Math.round(ret * 100 / cl.length) + "%"], ["Орташа чек", money(Math.round(sum / done.length))],
+      ["Бір клиент орта есеппен", (done.length / cl.length).toFixed(1) + " " + t("рет")]
+    ];
+    if (gaps.length) rows.push(["Келу арасы орта есеппен", Math.round(gaps.reduce(function (s, v) { return s + v; }, 0) / gaps.length) + " " + t("күн")]);
+    if (guests) rows.splice(1, 0, ["Қонақтар (аты жоқ)", String(guests)]);
+    rows.push(["60 күннен астам келмеген", String(lost)]);
+    if (ad + ch) rows.push(["Ересек / бала", ad + " / " + ch]);
+    if (vis) rows.push(["Келмегендер", ns + " · " + Math.round(ns * 100 / vis) + "%"]);
+    rows.push(["Ең көп жазылатын күн", bd === null ? "—" : t(WDN[bd])]);
+    rows.push(["Ең көп жазылатын уақыт", bh === null ? "—" : pad(+bh) + ":00"]);
+    rows.forEach(function (r) { var d = h("div", "blk"); d.appendChild(h("span", "", r[0])); d.lastChild.style.flex = "1"; d.appendChild(h("b", "", r[1], true)); box.appendChild(d); });
+  }
+  var cFilter = 0, cSort = 0, cTag = "", TAGS = ["VIP", "Кешігеді", "Балаларымен", "Сақал", "Бояу"];
   function renderClients() {
     var all = buildClients(), q = $("cq").value.trim(), dg = digits(q);
-    var shown = !q ? all : all.filter(function (c) { return c.name.toLowerCase().indexOf(q.toLowerCase()) >= 0 || (dg && digits(c.phone).indexOf(dg) >= 0); });
+    var nowT = new Date();
+    var shown = !q ? all : all.filter(function (c) { return c.name.toLowerCase().indexOf(q.toLowerCase()) >= 0 || (dg && digits(c.phone).indexOf(dg) >= 0) ||
+      (D.tg[c.key] || []).some(function (x) { return x.toLowerCase().indexOf(q.toLowerCase()) >= 0; }); });
+    shown = shown.filter(function (c) {
+      if (cFilter === 1) return c.visits.length && c.visits.every(function (v) { return (nowT - atTime(v)) / 86400000 < 30; });
+      if (cFilter === 2) return c.done.length >= 3;
+      if (cFilter === 3) return c.lastDone && !c.future && (nowT - c.lastDone) / 86400000 > 45;
+      if (cFilter === 4) return c.debt > 0;
+      if (cFilter === 5) return isBlocked(c.key);
+      return true;
+    });
+    if (cTag) shown = shown.filter(function (c) { return (D.tg[c.key] || []).indexOf(cTag) >= 0; });
+    shown = shown.slice().sort(function (a, b) {
+      if (cSort === 1) return b.done.length - a.done.length;
+      if (cSort === 2) return b.total - a.total;
+      if (cSort === 3) return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+      return b.last - a.last;
+    });
+    /* сүзгі, сұрыптау, тегтер */
+    var fb = $("cFilt"); fb.textContent = "";
+    chipRow(fb, ["Барлығы", "Жаңа", "Тұрақты", "Ұзақ келмеген", "Қарызы бар", "Бұғатталған"].map(function (x) { return t(x); }), cFilter, function (i) { cFilter = i; renderClients(); });
+    var sr = h("div", "small", "Сұрыптау:"); fb.appendChild(sr);
+    chipRow(fb, ["Соңғы келген", "Көп келген", "Көп төлеген", "Аты"].map(function (x) { return t(x); }), cSort, function (i) { cSort = i; renderClients(); });
+    var used = []; Object.keys(D.tg).forEach(function (k) { D.tg[k].forEach(function (x) { if (used.indexOf(x) < 0) used.push(x); }); }); used.sort();
+    if (used.length) {
+      var tr = h("div", "chips");
+      used.forEach(function (x) { var b = btn("#" + x, "chip", function () { cTag = cTag === x ? "" : x; renderClients(); }, true); b.setAttribute("aria-pressed", String(cTag === x)); tr.appendChild(b); });
+      fb.appendChild(tr);
+    }
     $("clientCount").textContent = t("Клиенттер: " + all.length);
     var now = new Date();
+    /* келетін уақыты болғандар */
+    var dd = $("due"); dd.textContent = "";
+    var dueL = all.filter(function (c) {
+      if (isBlocked(c.key) || c.done.length < 2 || c.avgGap < 5 || c.future || !c.lastDone) return false;
+      var since = Math.floor((now - c.lastDone) / 86400000); return since >= c.avgGap - 3 && since <= c.avgGap * 3;
+    }).sort(function (a, b) { return ((now - b.lastDone) / 86400000 - b.avgGap) - ((now - a.lastDone) / 86400000 - a.avgGap); }).slice(0, 8);
+    if (dueL.length && !q) {
+      var db2 = h("div", "box"); db2.appendChild(h("h3", "gold", "Келетін уақыты болды: " + dueL.length));
+      db2.appendChild(h("p", "small", "Орташа келу аралығына жеткен клиенттер. Жазылуға шақырыңыз."));
+      dueL.forEach(function (c) {
+        var r = h("div", "blk"), l = h("div"); l.appendChild(h("div", "nm", c.name, true));
+        l.appendChild(h("div", "mut", t("Әдетте " + c.avgGap + " күн сайын келеді · соңғысына " + Math.floor((now - c.lastDone) / 86400000) + " күн болды"), true));
+        r.appendChild(l);
+        if (c.phone) r.appendChild(link("WhatsApp", "sbtn wa", waLink(c.phone, Msg.rebook(c))));
+        r.appendChild(btn("Жаңа жазылу", "sbtn", function () { openSheet(null, selDate, c.name, c.phone); }));
+        db2.appendChild(r);
+      });
+      dd.appendChild(db2);
+    }
     /* ұзақ келмегендер */
     var lp = $("lapsed"); lp.textContent = "";
     var lapsed = all.filter(function (c) { return c.lastDone && !c.future && (now - c.lastDone) / 86400000 > 42 && c.phone; })
@@ -1416,11 +1672,12 @@ $n рет	$n раз
       });
       dp.appendChild(db);
     }
-    /* топ 10 */
+    renderClientStats(all);
+    /* топ 5 */
     var tp = $("top10"); tp.textContent = "";
-    var top = all.filter(function (c) { return c.done.length > 0; }).sort(function (a, b) { return b.done.length - a.done.length || b.total - a.total; }).slice(0, 10);
+    var top = all.filter(function (c) { return c.done.length > 0; }).sort(function (a, b) { return b.done.length - a.done.length || b.total - a.total; }).slice(0, 5);
     if (top.length) {
-      var tb = h("div", "box"); tb.appendChild(h("h3", "gold", "Топ 10 клиент (келу саны бойынша)"));
+      var tb = h("div", "box"); tb.appendChild(h("h3", "gold", "Топ 5 клиент (келу саны бойынша)"));
       top.forEach(function (c, i) {
         var r = h("div", "blk"); r.style.cursor = "pointer";
         r.appendChild(h("b", "", String(i + 1), true)); r.firstChild.style.minWidth = "22px";
@@ -1440,6 +1697,8 @@ $n рет	$n раз
       top2.appendChild(l); var cnt = h("b", "", c.done.length + " " + t("рет"), true); cnt.style.color = "var(--gold)"; top2.appendChild(cnt);
       card.appendChild(top2);
       card.appendChild(c.visits.length ? h("p", "small", "Жалпы: " + money(c.total) + "  ·  Соңғы: " + dmy(c.last)) : h("p", "small", "Жазылу әлі жоқ"));
+      if ((D.tg[c.key] || []).length) { var tgl = h("p", "small", D.tg[c.key].map(function (x) { return "#" + x; }).join("  "), true); tgl.style.color = "var(--gold)"; tgl.style.fontWeight = "700"; card.appendChild(tgl); }
+      if (isBlocked(c.key)) card.appendChild(h("p", "small red", "Бұғатталған"));
       if (c.noShows) card.appendChild(h("p", "small red", "Келмеген: " + c.noShows + " рет"));
       if (c.debt) card.appendChild(h("p", "small red", "Төленбеген: " + money(c.debt)));
       var note = D.nt[c.key];
@@ -1460,10 +1719,33 @@ $n рет	$n раз
         var ta = h("textarea", "plain"); ta.value = note || ""; ta.placeholder = t("Мысалы: 2 нөмірлі насадка, бүйірі қысқа"); ta.setAttribute("aria-label", t("Клиент туралы жазба"));
         ta.addEventListener("click", function (e) { e.stopPropagation(); });
         card.appendChild(ta);
+        card.appendChild(h("b", "", "Тегтер"));
+        var tgBox = h("div", "chips"); tgBox.addEventListener("click", function (e) { e.stopPropagation(); });
+        var cur = D.tg[c.key] || [];
+        TAGS.concat(cur.filter(function (x) { return TAGS.indexOf(x) < 0; })).forEach(function (x) {
+          var b = btn(x, "chip", function (e) {
+            e.stopPropagation(); var l2 = (D.tg[c.key] || []).slice(), ix = l2.indexOf(x);
+            if (ix >= 0) l2.splice(ix, 1); else l2.push(x);
+            if (l2.length) D.tg[c.key] = l2; else delete D.tg[c.key]; persist(); renderClients();
+          }, true); b.setAttribute("aria-pressed", String(cur.indexOf(x) >= 0)); tgBox.appendChild(b);
+        });
+        card.appendChild(tgBox);
+        var ntRow = h("div", "acts2"), nt = h("input"); nt.type = "text"; nt.placeholder = t("Өз тегіңіз"); nt.setAttribute("aria-label", t("Өз тегіңіз"));
+        nt.addEventListener("click", function (e) { e.stopPropagation(); });
+        ntRow.appendChild(nt);
+        ntRow.appendChild(btn("Қосу", "sbtn", function (e) { e.stopPropagation(); var v = nt.value.trim().replace(/^#/, ""); if (!v) return; var l3 = (D.tg[c.key] || []).slice(); if (l3.indexOf(v) < 0) l3.push(v); D.tg[c.key] = l3; persist(); renderClients(); }));
+        card.appendChild(ntRow);
         var acts = h("div", "acts2");
         acts.appendChild(btn("Жазбаны сақтау", "sbtn gold", function (e) { e.stopPropagation(); var v = ta.value.trim(); if (v) D.nt[c.key] = v; else delete D.nt[c.key]; persist(); renderClients(); toast("Жазылды ✓"); }));
         if (c.phone) acts.appendChild(link("WhatsApp", "sbtn wa", waLink(c.phone)));
         acts.appendChild(btn("Жаңа жазылу", "sbtn", function (e) { e.stopPropagation(); openSheet(null, selDate, c.name, c.phone); }));
+        var blk = isBlocked(c.key);
+        acts.appendChild(btn(blk ? "Бұғаттан шығару" : "Бұғаттау", "sbtn" + (blk ? "" : " danger"), function (e) {
+          e.stopPropagation();
+          if (blk) { D.bl = D.bl.filter(function (b) { return b.key !== c.key; }); }
+          else { if (!window.confirm(t("Клиентті бұғаттау керек пе?"))) return; D.bl.push({ key: c.key, name: c.name, phone: c.phone, since: Date.now() }); }
+          persist(); renderClients();
+        }));
         card.appendChild(acts);
       }
       var toggle = function () { openKey = open ? null : c.key; renderClients(); };
@@ -1473,6 +1755,20 @@ $n рет	$n раз
     });
   }
   $("cq").addEventListener("input", renderClients);
+  /* сырттан келген клиент */
+  var wiPay = "cash";
+  function renderWiPay() { var b = $("wiPay"); b.textContent = ""; chipRow(b, [t("Қолма-қол"), "Kaspi"], wiPay === "cash" ? 0 : 1, function (i) { wiPay = i ? "card" : "cash"; renderWiPay(); }); }
+  $("wiOpen").addEventListener("click", function () {
+    var bx = $("wiBox"); bx.hidden = !bx.hidden;
+    if (!bx.hidden) { var lp = appts.filter(function (a) { return a.done && !a.noShow; }).sort(function (x, y) { return atTime(y) - atTime(x); })[0]; $("wiPrice").value = lp && lp.price ? lp.price : ""; renderWiPay(); }
+  });
+  $("wiPrice").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
+  $("wiGo").addEventListener("click", function () {
+    var n = new Date();
+    appts.push({ id: uid(), name: "Қонақ", phone: "", price: parseInt($("wiPrice").value, 10) || 0, date: ymd(n), time: pad(n.getHours()) + ":" + pad(n.getMinutes()),
+      done: true, groupId: 0, noShow: false, service: "", category: "", unpaid: false, pay: wiPay });
+    $("wiBox").hidden = true; persist(); renderAll(true); toast("Жазылды ✓");
+  });
   var nc = { cat: "" };
   function ncValidate() { $("ncSave").disabled = !$("ncName").value.trim(); }
   function ncCats() {
@@ -1552,12 +1848,14 @@ $n рет	$n раз
   function backupData() {
     return { app: "barber", version: 1, exportedAt: Date.now(),
       appointments: appts.map(function (a) { return { id: a.id, name: a.name, phone: a.phone, price: a.price, startMillis: atTime(a).getTime(), date: a.date, time: a.time,
-        done: !!a.done, groupId: a.groupId || 0, noShow: !!a.noShow, service: a.service || "", category: a.category || "", unpaid: !!a.unpaid }; }),
+        done: !!a.done, groupId: a.groupId || 0, noShow: !!a.noShow, service: a.service || "", category: a.category || "", unpaid: !!a.unpaid, pay: a.pay || "" }; }),
       blocks: blocks.map(function (b) { return { id: b.id, day: b.date, fromMin: b.from, toMin: b.to, note: b.note || "" }; }),
       services: D.sv.map(function (s) { return { id: s.id, name: s.name, price: s.price }; }),
       notes: Object.keys(D.nt).map(function (k) { return { ckey: k, note: D.nt[k] }; }),
       waits: D.w.map(function (w) { return { id: w.id, name: w.name, phone: w.phone, day: w.day, note: w.note || "" }; }),
-      expenses: D.ex.map(function (e) { return { id: e.id, day: e.day, amount: e.amount, note: e.note || "" }; }),
+      expenses: D.ex.map(function (e) { return { id: e.id, day: e.day, amount: e.amount, note: e.note || "", cat: e.cat || "" }; }),
+      tags: D.tg || {},
+      blocked: (D.bl || []).map(function (b) { return { key: b.key, name: b.name || "", phone: b.phone || "", since: b.since || 0 }; }),
       clients: (D.mc || []).map(function (m) { return { name: m.name, phone: m.phone || "", category: m.category || "", note: m.note || "" }; }) };
   }
   $("exp").addEventListener("click", function () {
@@ -1582,7 +1880,7 @@ $n рет	$n раз
         if ((!date || !time) && a.startMillis) { var d = new Date(+a.startMillis); date = ymd(d); time = pad(d.getHours()) + ":" + pad(d.getMinutes()); }
         if (!a.name || !date || !time) throw new Error("bad");
         return { id: a.id, name: String(a.name), phone: String(a.phone || ""), price: parseInt(a.price, 10) || 0, date: String(date), time: String(time), done: !!a.done,
-          groupId: +a.groupId || 0, noShow: !!a.noShow, service: String(a.service || ""), category: String(a.category || ""), unpaid: !!a.unpaid };
+          groupId: +a.groupId || 0, noShow: !!a.noShow, service: String(a.service || ""), category: String(a.category || ""), unpaid: !!a.unpaid, pay: a.pay === "card" ? "card" : (a.pay === "cash" ? "cash" : "") };
       });
       var B = (o.blocks || []).map(function (b) { return { id: b.id, date: String(b.day), from: +b.fromMin, to: +b.toMin, note: String(b.note || "") }; });
       pendingImport = { a: A, b: B, o: o }; impMsg(""); $("impConfirm").hidden = false;
@@ -1602,7 +1900,9 @@ $n рет	$n раз
     if (Array.isArray(o.services)) D.sv = o.services.map(function (s) { return { id: s.id, name: String(s.name), price: parseInt(s.price, 10) || 0 }; });
     if (Array.isArray(o.notes)) { D.nt = {}; o.notes.forEach(function (n) { D.nt[String(n.ckey)] = String(n.note); }); }
     if (Array.isArray(o.waits)) D.w = o.waits.map(function (w) { return { id: w.id, name: String(w.name), phone: String(w.phone || ""), day: String(w.day), note: String(w.note || "") }; });
-    if (Array.isArray(o.expenses)) D.ex = o.expenses.map(function (e) { return { id: e.id, day: String(e.day), amount: parseInt(e.amount, 10) || 0, note: String(e.note || "") }; });
+    if (Array.isArray(o.expenses)) D.ex = o.expenses.map(function (e) { return { id: e.id, day: String(e.day), amount: parseInt(e.amount, 10) || 0, note: String(e.note || ""), cat: String(e.cat || "") }; });
+    if (o.tags && typeof o.tags === "object") D.tg = o.tags;
+    if (Array.isArray(o.blocked)) D.bl = o.blocked.map(function (b) { return { key: String(b.key || ""), name: String(b.name || ""), phone: String(b.phone || ""), since: +b.since || 0 }; }).filter(function (b) { return b.key; });
     if (Array.isArray(o.clients)) D.mc = o.clients.map(function (m) { return { name: String(m.name || ""), phone: String(m.phone || ""), category: String(m.category || ""), note: String(m.note || "") }; }).filter(function (m) { return m.name; });
     persist(); $("impConfirm").hidden = true;
     impMsg("Қайтарылды: " + appts.length + " жазылу"); pendingImport = null; renderAll();
@@ -1646,6 +1946,13 @@ $n рет	$n раз
     if (people() > 1 && form.time) { rn.hidden = false; rn.textContent = t("Жазылу: " + form.time + "–" + fmtMin(toMin(form.time) + 30 * people()) + " · " + people() + " адам"); }
     else rn.hidden = true;
     $("cameWrap").hidden = !(isPast() && !editing);
+  }
+  function renderPay() {
+    var box = $("payChips"); box.textContent = "";
+    [["cash", "Қолма-қол"], ["card", "Kaspi"]].forEach(function (p) {
+      var b = h("button", "chip", p[1]); b.type = "button"; b.setAttribute("aria-pressed", String(form.pay === p[0]));
+      b.addEventListener("click", function () { form.pay = p[0]; renderPay(); }); box.appendChild(b);
+    });
   }
   function renderCat() {
     var box = $("cat"); box.textContent = "";
@@ -1717,19 +2024,20 @@ $n рет	$n раз
     var c = clientByForm($("fName").value, $("fPhone").value);
     if (!c) return;
     if (!form.cat && c.category && !editing) { form.cat = c.category; renderCat(); }
+    if (isBlocked(c.key)) box.appendChild(h("div", "warnb red", "⚠ Бұғатталған клиент. Жазсаңыз да болады, бірақ ойланыңыз."));
     if (c.noShows >= 1) box.appendChild(h("div", "warnb red", "Назар аударыңыз: бұл клиент " + c.noShows + " рет келмеген"));
     if (c.debt > 0) box.appendChild(h("div", "warnb red", "Бұл клиенттің төленбеген қарызы бар: " + c.debt + " ₸"));
     if (D.nt[c.key]) box.appendChild(h("div", "warnb", t("Жазба: ") + D.nt[c.key], true));
   }
   function changed() { return !!editing && (editing.date !== form.date || editing.time !== form.time); }
   function validate() {
-    $("save").disabled = !($("fName").value.trim() && form.time && form.extra.every(function (e) { return e.name.trim(); }));
+    $("save").disabled = !(($("fName").value.trim() || $("fPhone").value.trim()) && form.time && form.extra.every(function (e) { return e.name.trim(); }));
     $("saveWa").hidden = !(changed() && $("fPhone").value.trim()); $("saveWa").disabled = $("save").disabled;
   }
-  function syncForm() { $("fDate").value = form.date; renderQuick(); renderPeople(); renderSlots(); renderCat(); renderRep(); renderWarn(); validate(); }
+  function syncForm() { $("fDate").value = form.date; renderQuick(); renderPeople(); renderSlots(); renderCat(); renderPay(); renderRep(); renderWarn(); validate(); }
   function openSheet(a, date, name, phone, waitId, slotTime) {
     editing = a || null;
-    form = { date: a ? a.date : (date || selDate), time: a ? a.time : null, extra: [], cat: a ? a.category : "", service: a ? a.service : "", rep: 0, repN: 4, waitId: waitId || 0 };
+    form = { date: a ? a.date : (date || selDate), time: a ? a.time : null, extra: [], cat: a ? a.category : "", service: a ? a.service : "", rep: 0, repN: 4, waitId: waitId || 0, pay: (a && a.pay) || "cash" };
     if (slotTime && !a) form.time = slotTime;
     $("sheetTitle").textContent = t(a ? "Жазылуды өзгерту" : "Жаңа жазылу");
     $("fName").value = a ? a.name : (name || ""); $("fPhone").value = a ? a.phone : (phone || ""); $("fPrice").value = a && a.price ? a.price : "";
@@ -1743,11 +2051,11 @@ $n рет	$n раз
   $("fPhone").addEventListener("input", function () { renderWarn(); validate(); });
   $("fPrice").addEventListener("input", function () { this.value = this.value.replace(/\D/g, ""); });
   function doSave(whats) {
-    var rec = { name: $("fName").value.trim(), phone: $("fPhone").value.trim(), price: parseInt($("fPrice").value, 10) || 0, date: form.date, time: form.time };
+    var rec = { name: ($("fName").value.trim() === "Қонақ" ? "" : $("fName").value.trim()) || $("fPhone").value.trim() || $("fName").value.trim(), phone: $("fPhone").value.trim(), price: parseInt($("fPrice").value, 10) || 0, date: form.date, time: form.time };
     var unpaid = $("fUnpaid").checked, skipped = 0, waUrl = "";
     if (editing) {
       var wasMoved = changed();
-      Object.assign(editing, rec, { category: form.cat, service: form.service, unpaid: unpaid });
+      Object.assign(editing, rec, { category: form.cat, service: form.service, unpaid: unpaid, pay: form.pay });
       if (whats && wasMoved && rec.phone) waUrl = waLink(rec.phone, Msg.moved(editing));
     } else {
       var persons = [{ name: rec.name, price: rec.price, cat: form.cat, service: form.service }].concat(form.extra.map(function (e) { return { name: e.name.trim(), price: parseInt(e.price, 10) || 0, cat: e.cat || "", service: "" }; }));
@@ -1761,7 +2069,7 @@ $n рет	$n раз
         }
         var lead = 0;
         persons.forEach(function (pr, j) {
-          var a = { id: uid(), name: pr.name, phone: rec.phone, price: pr.price, date: d, time: SLOTS[i0 + j], done: false, groupId: 0, noShow: false, service: pr.service, category: pr.cat, unpaid: unpaid };
+          var a = { id: uid(), name: pr.name, phone: rec.phone, price: pr.price, date: d, time: SLOTS[i0 + j], done: false, groupId: 0, noShow: false, service: pr.service, category: pr.cat, unpaid: unpaid, pay: form.pay };
           if (k === 0 && came && atTime(a).getTime() < Date.now()) a.done = true;
           if (persons.length > 1) { if (j === 0) lead = a.id; a.groupId = lead; }
           appts.push(a);
